@@ -12,18 +12,21 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     /**
-     * Atribut yang dapat diisi secara massal.
-     * Pastikan role_id disertakan agar dapat disimpan.
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
      */
     protected $fillable = [
         'name',
         'email',
         'password',
-        'role_id',
+        'role_id', // Memastikan role_id bisa diisi saat CRUD nanti
     ];
 
     /**
-     * Atribut yang disembunyikan untuk serialisasi array/JSON.
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
      */
     protected $hidden = [
         'password',
@@ -31,7 +34,9 @@ class User extends Authenticatable
     ];
 
     /**
-     * Tipe casting data (konversi otomatis).
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
      */
     protected function casts(): array
     {
@@ -42,7 +47,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Relasi ke model Role: Pengguna ini memiliki satu Peran (Role).
+     * Relasi ke tabel Role (Satu User memiliki Satu Role)
      */
     public function role()
     {
@@ -50,11 +55,10 @@ class User extends Authenticatable
     }
 
     /**
-     * Helper untuk mengecek apakah user memiliki role tertentu berdasarkan slug.
-     * Dapat digunakan di Middleware atau Blade view.
+     * Fungsi Helper untuk mengecek Role pengguna berdasarkan slug
      */
     public function hasRole(string $roleSlug): bool
     {
-        return $this->role !== null && $this->role->slug === $roleSlug;
+        return $this->role?->slug === $roleSlug;
     }
 }
