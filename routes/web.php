@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController; // <-- PENTING: Import UserController di sini
+use App\Http\Controllers\SiswaController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -21,7 +22,10 @@ Route::middleware('auth')->group(function () {
 // --- RUTE MANAJEMEN PENGGUNA (Hanya untuk Admin Sekolah) ---
 Route::middleware(['auth', 'role:admin-sekolah'])->group(function () {
     Route::resource('users', UserController::class);
+    Route::resource('siswa', SiswaController::class); // <-- Tambahkan baris ini
 });
 // -----------------------------------------------------------
+
+
 
 require __DIR__.'/auth.php';

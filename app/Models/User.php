@@ -61,4 +61,16 @@ class User extends Authenticatable
     {
         return $this->role?->slug === $roleSlug;
     }
+
+        // Relasi ke Siswa (Jika user adalah Orang Tua)
+    public function anak()
+    {
+        return $this->hasMany(Siswa::class, 'orang_tua_id');
+    }
+
+    // Relasi ke Kelas (Jika user adalah Wali Kelas)
+    public function kelasDiampu()
+    {
+        return $this->hasOne(Kelas::class, 'wali_kelas_id');
+    }
 }

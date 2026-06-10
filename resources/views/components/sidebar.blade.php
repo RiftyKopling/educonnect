@@ -5,7 +5,7 @@
     $menus = [
         'admin-sekolah' => [
             ['name' => 'Manajemen Pengguna', 'icon' => 'users', 'route' => 'users.index'],
-            ['name' => 'Manajemen Siswa', 'icon' => 'user-group', 'route' => null],
+            ['name' => 'Manajemen Siswa', 'icon' => 'user-group', 'route' => 'siswa.index'],
             ['name' => 'Manajemen Kelas', 'icon' => 'academic-cap', 'route' => null],
             ['name' => 'Manajemen Mapel', 'icon' => 'book-open', 'route' => null],
         ],
