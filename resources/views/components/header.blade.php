@@ -1,8 +1,10 @@
 <header class="bg-gradient-to-r from-[#0077B6] to-[#03045E] text-white p-4 shadow-md flex justify-between items-center px-8 relative">
-    <div class="flex items-center gap-3">
-        <div class="p-2 bg-white/20 rounded-lg">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-        </div>
+    <div class="flex items-center gap-4">
+        <button @click="sidebarOpen = !sidebarOpen" class="p-2 bg-white/20 hover:bg-white/30 rounded-lg shadow-sm transition-all focus:outline-none hover:scale-105 active:scale-95">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+        </button>
         <h1 class="text-2xl font-bold tracking-tight italic">EduConnect</h1>
     </div>
 

@@ -36,7 +36,7 @@
     ];
 @endphp
 
-<aside class="w-72 bg-white flex flex-col border-r border-gray-100 sticky top-0 h-screen">
+<aside class="w-72 shrink-0 bg-white flex flex-col border-r border-gray-100 sticky top-0 h-screen transition-all duration-300 ease-in-out" :class="sidebarOpen ? 'ml-0' : '-ml-72'">
     <div class="p-6 flex-1 overflow-y-auto">
         <nav class="space-y-3">
             @foreach($menus[$roleSlug] ?? [] as $item)
