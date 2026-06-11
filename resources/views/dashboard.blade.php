@@ -7,17 +7,20 @@
         <div class="absolute -right-20 -top-20 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+    <div class="grid grid-cols-2 gap-6 mb-10" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
         @php
-            // Logic untuk Quick Cards menggunakan slug yang sesuai dengan database
-            $cards = [
-                'admin-sekolah' => ['Pengguna', 'Siswa', 'Kelas', 'Mapel'],
-                'guru-mapel'    => ['Input Nilai', 'Presensi', 'Materi', 'Jadwal'],
-                'orang-tua'     => ['Nilai Anak', 'Presensi', 'Laporan BK', 'Pesan'],
-            ];
-            
             // Ambil slug dari relasi role, gunakan null safe operator (?->) untuk berjaga-jaga
             $userRoleSlug = auth()->user()->role?->slug;
+        
+            // Logic untuk Quick Cards menggunakan slug yang sesuai dengan database
+            $cards = [
+                'admin-sekolah' => ['Manajemen Pengguna', 'Manajemen Siswa', 'Manajemen Kelas', 'Manajemen Mapel'],
+                'guru-mapel'    => ['Presensi Siswa', 'Input Nilai', 'Materi Ajar'], // Kurang 1, Kurang Pesan dan Pengumuman
+                'guru-bk'       => ['Catatan Konseling', 'Laporan Perkembangan'], // Sudah Benar
+                'wali-kelas'    => ['Rekap Nilai', 'Rekap Presensi', 'Catatan BK Siswa'], // Kurang 2, Profil kelas dan Pengumuman
+                'kepala-sekolah'=> ['Laporan Akademik', 'Monitoring Sistem', 'Buat Pengumuman'], // Hapus Monitoring Sistem, harusnya cuma 2
+                'orang-tua'     => ['Nilai Anak', 'Presensi Anak', 'Pengumuman'],
+            ];
             
             // Cari kartu berdasarkan slug, jika tidak ada gunakan default
             $currentCards = $cards[$userRoleSlug] ?? ['Data Akademik', 'Presensi', 'Konseling', 'Pengumuman'];

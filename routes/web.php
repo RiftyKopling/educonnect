@@ -7,8 +7,13 @@ use App\Http\Controllers\KelasController;
 use App\Http\Controllers\MapelController;
 use Illuminate\Support\Facades\Route;
 
+use Illuminate\Support\Facades\Auth;
+
 Route::get('/', function () {
-    return view('welcome');
+    if (Auth::check()) {
+        return redirect()->route('dashboard');
+    }
+    return redirect()->route('login');
 });
 
 Route::get('/dashboard', function () {
