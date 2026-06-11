@@ -6,7 +6,7 @@
         'admin-sekolah' => [
             ['name' => 'Manajemen Pengguna', 'icon' => 'users', 'route' => 'users.index'],
             ['name' => 'Manajemen Siswa', 'icon' => 'user-group', 'route' => 'siswa.index'],
-            ['name' => 'Manajemen Kelas', 'icon' => 'academic-cap', 'route' => null],
+            ['name' => 'Manajemen Kelas', 'icon' => 'academic-cap', 'route' => 'kelas.index'],
             ['name' => 'Manajemen Mapel', 'icon' => 'book-open', 'route' => null],
         ],
         'guru-mapel' => [
