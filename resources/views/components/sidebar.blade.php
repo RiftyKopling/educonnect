@@ -7,7 +7,7 @@
             ['name' => 'Manajemen Pengguna', 'icon' => 'users', 'route' => 'users.index'],
             ['name' => 'Manajemen Siswa', 'icon' => 'user-group', 'route' => 'siswa.index'],
             ['name' => 'Manajemen Kelas', 'icon' => 'academic-cap', 'route' => 'kelas.index'],
-            ['name' => 'Manajemen Mapel', 'icon' => 'book-open', 'route' => null],
+            ['name' => 'Manajemen Mapel', 'icon' => 'book-open', 'route' => 'mapel.index'],
         ],
         'guru-mapel' => [
             ['name' => 'Presensi Siswa', 'icon' => 'clipboard-check', 'route' => null],
