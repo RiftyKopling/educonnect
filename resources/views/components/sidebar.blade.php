@@ -52,12 +52,12 @@
         </nav>
     </div>
 
-    <div class="p-6 bg-white border-t border-gray-50">
+    <div class="p-4 bg-white border-t border-gray-50">
         <div class="flex flex-col items-center">
-            <div class="w-full">
-                 <div class="p-3 bg-navy rounded-xl shadow-xl flex items-center justify-center">
-                    <div class="text-white font-bold text-lg tracking-tighter">EduConnect</div>
-                 </div>
+            <div class="mt-auto w-full">
+                <div class="flex justify-center" style="margin-bottom: 5px;">
+                    <img src="{{ asset('images/logo_educonnect.png') }}" alt="Logo" style="width: 360px;" class="max-w-none">
+                </div>
             </div>
         </div>
     </div>
