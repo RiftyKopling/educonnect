@@ -6,7 +6,7 @@
             </svg>
         </button>
         <a href="{{ route('dashboard') }}" class="hover:opacity-80 transition-opacity duration-200">
-            <h1 class="text-2xl font-bold tracking-tight italic">EduConnect</h1>
+            <h1 class="text-2xl font-bold tracking-tight">EduConnect</h1>
         </a>
     </div>
 
