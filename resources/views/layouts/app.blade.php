@@ -16,7 +16,7 @@
         .shadow-soft { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); }
     </style>
 </head>
-<body class="flex min-h-screen text-gray-800 antialiased" x-data="{ sidebarOpen: true }">
+<body class="flex min-h-screen text-gray-800 antialiased" x-data="{ sidebarOpen: false }">
 
     <x-sidebar />
 

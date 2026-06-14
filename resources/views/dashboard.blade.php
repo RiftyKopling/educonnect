@@ -1,36 +1,95 @@
 <x-app-layout>
-    <div class="relative overflow-hidden bg-gradient-to-br from-[#00B4D8] via-[#0077B6] to-[#03045E] rounded-3xl p-10 text-white shadow-2xl mb-8">
+    @php
+    $banner = asset('images/banner_dashboard.png');
+    @endphp
+
+    <div id="banner-dashboard"
+        class="relative overflow-hidden rounded-3xl p-10 text-white shadow-2xl mb-8 bg-cover bg-center"
+        style="background-image: url('{{ $banner }}');">
+        <div class="absolute inset-0 bg-black/10"></div>
         <div class="relative z-10">
-            <h2 class="text-4xl font-extrabold mb-2">Selamat Datang, {{ explode(' ', Auth::user()->name)[0] }}</h2>
-            <p class="text-white/80 font-light tracking-wide italic">Pantau dan kelola aktivitas sekolah dalam satu platform terpadu.</p>
+            <h2 class="text-4xl font-extrabold mb-2">
+                Selamat Datang, {{ explode(' ', Auth::user()->name)[0] }}
+            </h2>
+            <p class="text-white/80 font-light tracking-wide italic">
+                Pantau dan Kelola Aktivitas Skolah dalam Satu Platform Terpadu.
+            </p>
         </div>
-        <div class="absolute -right-20 -top-20 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
     </div>
+
+    <img src="{{ $banner }}"
+        style="display:none;"
+        onerror="
+            var el = document.getElementById('banner-dashboard');
+            el.style.backgroundImage = 'none';
+            el.style.background = 'linear-gradient(to bottom right, #ff5400, #ff8500, #ff9e00)';
+        ">
 
     <div class="grid grid-cols-2 gap-6 mb-10" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
         @php
-            $userRoleSlug = auth()->user()->role?->slug;
-        
-            // Konfigurasi Quick Cards yang sudah diperbarui
-            $cards = [
-                'admin-sekolah' => ['Manajemen Pengguna', 'Manajemen Siswa', 'Manajemen Kelas', 'Manajemen Mapel'],
-                'guru-mapel'    => ['Presensi Siswa', 'Input Nilai', 'Materi Ajar', 'Pesan', 'Pengumuman'],
-                'guru-bk'       => ['Catatan Konseling', 'Laporan Perkembangan'],
-                'wali-kelas'    => ['Rekap Nilai', 'Rekap Presensi', 'Catatan BK Siswa', 'Profil Kelas', 'Pengumuman'],
-                'kepala-sekolah'=> ['Laporan Akademik', 'Buat Pengumuman'],
-                'orang-tua'     => ['Nilai Anak', 'Presensi Anak', 'Pengumuman'],
-            ];
-            
-            $currentCards = $cards[$userRoleSlug] ?? ['Data Akademik', 'Presensi', 'Konseling', 'Pengumuman'];
+        $userRoleSlug = auth()->user()->role?->slug;
+
+        // Konfigurasi Quick Cards yang sudah diperbarui
+        $cards = [
+        'admin-sekolah' => [
+        ['name' => 'Manajemen Pengguna', 'icon' => 'users', 'route' => 'users.index'],
+        ['name' => 'Manajemen Siswa', 'icon' => 'user-group', 'route' => 'siswa.index'],
+        ['name' => 'Manajemen Kelas', 'icon' => 'academic-cap', 'route' => 'kelas.index'],
+        ['name' => 'Manajemen Mata Pelajaran', 'icon' => 'book-open', 'route' => 'mapel.index'],
+        ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => null],
+        ],
+        'guru-mapel' => [
+        ['name' => 'Presensi Siswa', 'icon' => 'clipboard-check', 'route' => null],
+        ['name' => 'Input Nilai', 'icon' => 'pencil-square', 'route' => null],
+        ['name' => 'Materi Ajar', 'icon' => 'document-text', 'route' => null],
+        ['name' => 'Pesan & Pengumuman', 'icon' => 'bell', 'route' => null],
+        ],
+        'guru-bk' => [
+        ['name' => 'Catatan Konseling', 'icon' => 'chat-bubble-left-right', 'route' => null],
+        ['name' => 'Laporan Perkembangan Siswa', 'icon' => 'chart-bar', 'route' => null],
+        ['name' => 'Pesan & Pengumuman', 'icon' => 'bell', 'route' => null],
+        ],
+        'wali-kelas' => [
+        ['name' => 'Rekap Nilai', 'icon' => 'document-chart-bar', 'route' => null],
+        ['name' => 'Rekap Presensi', 'icon' => 'clipboard-document-list', 'route' => null],
+        ['name' => 'Catatan BK Siswa', 'icon' => 'folder-open', 'route' => null],
+        ['name' => 'Profil Kelas', 'icon' => 'user-group', 'route' => null],
+        ['name' => 'Pesan & Pengumuman', 'icon' => 'bell', 'route' => null],
+        ],
+        'kepala-sekolah' => [
+        ['name' => 'Laporan Akademik', 'icon' => 'presentation-chart-line', 'route' => null],
+        ['name' => 'Pesan & Pengumuman', 'icon' => 'bell', 'route' => null],
+        ['name' => 'Buat Pengumuman', 'icon' => 'megaphone', 'route' => null],
+        ],
+        'orang-tua' => [
+        ['name' => 'Nilai Anak', 'icon' => 'academic-cap', 'route' => null],
+        ['name' => 'Presensi Anak', 'icon' => 'check-badge', 'route' => null],
+        ['name' => 'Pengumuman', 'icon' => 'bell', 'route' => null],
+        ],
+        ];
+
+        // Cari kartu berdasarkan slug, jika tidak ada gunakan default
+        $currentCards = $cards[$userRoleSlug] ?? [
+        ['name' => 'Data Akademik', 'icon' => 'academic-cap', 'route' => null],
+        ['name' => 'Presensi', 'icon' => 'clipboard-check', 'route' => null],
+        ['name' => 'Konseling', 'icon' => 'chat-bubble-left-right', 'route' => null],
+        ['name' => 'Pengumuman', 'icon' => 'bell', 'route' => null],
+        ];
         @endphp
 
         @foreach($currentCards as $card)
-        <div class="bg-white p-6 rounded-[2.5rem] shadow-soft border border-gray-50 flex flex-col items-center justify-center gap-3 transition-transform hover:-translate-y-1 hover:shadow-xl cursor-pointer">
-            <div class="w-12 h-12 bg-gray-100 rounded-2xl flex items-center justify-center text-[#03045E]">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+        @php
+        $url = $card['route'] ? route($card['route']) : '#';
+        @endphp
+        <a href="{{ $url }}"
+            class="bg-white p-6 rounded-[2.5rem] shadow-soft border border-gray-50 flex flex-col items-center justify-center gap-3 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl group cursor-pointer"
+            onmouseover="this.style.background='linear-gradient(to bottom right, #0077B6, #03045E)'; this.querySelector('span').style.color='white'; this.querySelector('.icon-wrap').style.backgroundColor='rgba(255,255,255,0.2)'; this.querySelector('.icon-wrap').style.color='white';"
+            onmouseout="this.style.background='white'; this.querySelector('span').style.color=''; this.querySelector('.icon-wrap').style.backgroundColor=''; this.querySelector('.icon-wrap').style.color='';">
+            <div class="icon-wrap w-12 h-12 bg-gray-100 rounded-2xl flex items-center justify-center text-navy transition-all duration-300">
+                @svg('heroicon-o-' . $card['icon'], 'w-6 h-6')
             </div>
-            <span class="text-[#03045E] font-bold text-sm tracking-tight text-center">{{ $card }}</span>
-        </div>
+            <span class="text-navy font-bold text-sm tracking-tight transition-all duration-300">{{ $card['name'] }}</span>
+        </a>
         @endforeach
     </div>
 
@@ -39,7 +98,9 @@
             <h3 class="text-2xl font-black text-[#03045E] tracking-tight">Daftar Pengumuman Terbaru</h3>
             <a href="{{ route('pengumuman.masuk') }}" class="text-sm font-bold text-[#03045E] hover:underline flex items-center gap-1">
                 Lihat Semua
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
             </a>
         </div>
 

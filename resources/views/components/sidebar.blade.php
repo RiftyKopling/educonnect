@@ -7,7 +7,7 @@
             ['name' => 'Manajemen Pengguna', 'icon' => 'users', 'route' => 'users.index'],
             ['name' => 'Manajemen Siswa', 'icon' => 'user-group', 'route' => 'siswa.index'],
             ['name' => 'Manajemen Kelas', 'icon' => 'academic-cap', 'route' => 'kelas.index'],
-            ['name' => 'Manajemen Mapel', 'icon' => 'book-open', 'route' => 'mapel.index'],
+            ['name' => 'Manajemen Mata Pelajaran', 'icon' => 'book-open', 'route' => 'mapel.index'],
         ],
         'guru-mapel' => [
             ['name' => 'Presensi Siswa', 'icon' => 'clipboard-check', 'route' => null],
@@ -51,8 +51,8 @@
                     // Logika pintar: Jika route ada isinya, buatkan link. Jika null, kembalikan ke '#'
                     $url = $item['route'] ? route($item['route']) : '#';
                 @endphp
-                
-                <a href="{{ $url }}" class="flex items-center px-6 py-3 bg-navy text-white rounded-capsule shadow-lg transition-all hover:scale-105 active:scale-95">
+                <a href="{{ $url }}" class="flex items-center gap-3 px-6 py-3 bg-gradient-to-bl from-[#0077B6] to-[#03045E] text-white rounded-capsule shadow-lg transition-all hover:scale-105 active:scale-95">
+                @svg('heroicon-o-' . $item['icon'], 'w-5 h-5 shrink-0')
                     <span class="text-sm font-semibold tracking-wide">{{ $item['name'] }}</span>
                 </a>
             @endforeach
@@ -62,8 +62,10 @@
     <div class="p-4 bg-white border-t border-gray-50">
         <div class="flex flex-col items-center">
             <div class="mt-auto w-full">
-                <div class="flex justify-center" style="margin-bottom: 5px;">
-                    <img src="{{ asset('images/logo_educonnect.png') }}" alt="Logo" style="width: 360px;" class="max-w-none">
+                <div class="flex justify-center items-center gap-2 mb-8">
+                    <img src="{{ asset('images/fix_logo_educonnect.png') }}" alt="Logo EduConnect" style="width: 100px; margin-right: 12px;">
+                    <div style="width: 1px; height: 60px; background-color: #d1d5db;"></div>
+                    <img src="{{ asset('images/fix_logo_smpn2mungkid.png') }}" alt="Logo Sekolah" style="width: 100px; margin-left: 12px;">
                 </div>
             </div>
         </div>
