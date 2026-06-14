@@ -35,6 +35,8 @@ class SiswaController extends Controller
             'jenis_kelamin' => 'required|in:L,P',
             'kelas_id' => 'required|exists:kelas,id',
             'tanggal_lahir' => 'required|date',
+            // Tambahkan validasi ini:
+            'orang_tua_id' => 'nullable|exists:users,id',
         ]);
 
         Siswa::create($request->all());
@@ -69,6 +71,7 @@ class SiswaController extends Controller
             'jenis_kelamin' => 'required|in:L,P',
             'kelas_id' => 'required|exists:kelas,id',
             'tanggal_lahir' => 'required|date',
+            'orang_tua_id' => 'nullable|exists:users,id',
         ]);
 
         $siswa->update($request->all());

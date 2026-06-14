@@ -64,6 +64,21 @@
                         <input type="date" name="tanggal_lahir" class="w-full rounded-2xl border-gray-200 p-4">
                     </div>
 
+                    <!-- Orang Tua -->
+                    <div>
+                        <label class="block text-xs font-black text-[#03045E] mb-2 uppercase tracking-widest">Pilih Orang Tua / Wali</label>
+                        <select name="orang_tua_id" class="w-full rounded-2xl border-gray-100 bg-gray-50 p-4 font-bold focus:ring-2 focus:ring-[#03045E] focus:bg-white transition-all text-[#03045E]">
+                            <option value="">-- Pilih Akun Orang Tua (Opsional) --</option>
+                            @foreach($data_ortu as $ortu)
+                                <option value="{{ $ortu->id }}" {{ old('orang_tua_id') == $ortu->id ? 'selected' : '' }}>
+                                    {{ $ortu->name }} ({{ $ortu->email }})
+                                </option>
+                            @endforeach
+                        </select>
+                        <p class="text-[10px] text-gray-400 mt-1 font-medium">*Pastikan akun Orang Tua sudah didaftarkan di menu Manajemen Pengguna terlebih dahulu.</p>
+                        @error('orang_tua_id') <p class="text-red-500 text-xs mt-2 font-bold">{{ $message }}</p> @enderror
+                    </div>
+
                     <!-- Alamat -->
                     <div class="col-span-full">
                         <label class="block text-sm font-bold text-[#03045E] mb-2 uppercase">Alamat Lengkap</label>
