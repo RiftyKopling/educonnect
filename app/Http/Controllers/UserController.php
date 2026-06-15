@@ -10,10 +10,27 @@ use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::with('role')->latest()->paginate(10);
-        return view('users.index', compact('users'));
+        $query = User::with('role')->latest();
+
+        if ($request->filled('search')){
+            $query->where(function($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                    ->orWhere('email', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        if ($request->filled('role')) {
+            $query->whereHas('role', function($q) use ($request) {
+                $q->where('id', $request->role);
+            });
+        }
+
+        $users = $query->paginate(10)->withQueryString();
+        $roles = Role::all();
+
+        return view('users.index', compact('users', 'roles'));
     }
 
     public function create()

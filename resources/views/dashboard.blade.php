@@ -6,14 +6,19 @@
     <div id="banner-dashboard" 
         class="relative overflow-hidden rounded-3xl p-10 text-white shadow-2xl mb-8 bg-cover bg-center"
         style="background-image: url('{{ $banner }}');">
-        <div class="absolute inset-0 bg-black/10"></div>
-        <div class="relative z-10">
-            <h2 class="text-4xl font-extrabold mb-2">
-                Selamat Datang, {{ explode(' ', Auth::user()->name)[0] }}
-            </h2>
-            <p class="text-white/80 font-light tracking-wide italic">
-                Pantau dan Kelola Aktivitas Skolah dalam Satu Platform Terpadu.
-            </p>
+        <div class="relative z-10 flex justify-between items-center">
+            <div>
+                <h2 class="text-4xl font-extrabold mb-2">
+                    Selamat Datang, {{ explode(' ', Auth::user()->name)[0] }}
+                </h2>
+                <p class="text-white/80 font-light tracking-wide italic">
+                    Pantau dan Kelola Aktivitas Sekolah dalam Satu Platform Terpadu.
+                </p>
+            </div>
+            <div class="text-right hidden lg:block">
+                <div id="jam-realtime" class="text-5xl font-black tracking-tight"></div>
+                <div id="tanggal-realtime" class="text-white/80 text-sm mt-1"></div>
+            </div>
         </div>
     </div>
 
@@ -89,7 +94,7 @@
             <div class="icon-wrap w-12 h-12 bg-gray-100 rounded-2xl flex items-center justify-center text-navy transition-all duration-300">
                 @svg('heroicon-o-' . $card['icon'], 'w-6 h-6')
             </div>
-            <span class="text-navy font-bold text-sm tracking-tight transition-all duration-300">{{ $card['name'] }}</span>
+            <span class="text-navy font-bold text-sm tracking-tight transition-all duration-300 text-center">{{ $card['name'] }}</span>
         </a>
         @endforeach
     </div>
@@ -106,8 +111,8 @@
             <table class="w-full border-separate border-spacing-y-3">
                 <thead>
                     <tr class="text-white">
-                        <th class="bg-gradient-to-b from-[#0077B6] to-[#03045E] p-4 rounded-l-full text-left font-bold tracking-widest text-lg uppercase ">Judul</th>
-                        <th class="bg-gradient-to-b from-[#0077B6] to-[#03045E] p-4 rounded-r-full text-left font-bold tracking-widest text-lg uppercase">Tanggal</th>
+                        <th class="bg-gradient-to-b from-[#0077B6] to-[#03045E] p-4 rounded-l-full text-left font-bold tracking-widest text-sm uppercase ">Judul</th>
+                        <th class="bg-gradient-to-b from-[#0077B6] to-[#03045E] p-4 rounded-r-full text-left font-bold tracking-widest text-sm uppercase">Tanggal</th>
                     </tr>
                 </thead>
                 <tbody class="text-navy font-medium">
@@ -129,4 +134,28 @@
             </table>
         </div>
     </div>
+    <script>
+        function updateJam() {
+            const now = new Date();
+
+            const jam = now.toLocaleTimeString('id-ID', { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit' 
+            });
+
+            const hari = now.toLocaleDateString('id-ID', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+
+            document.getElementById('jam-realtime').textContent = jam;
+            document.getElementById('tanggal-realtime').textContent = hari;
+        }
+
+        updateJam();
+        setInterval(updateJam, 1000);
+    </script>
 </x-app-layout>
