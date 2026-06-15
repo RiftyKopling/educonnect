@@ -13,25 +13,32 @@
             ['name' => 'Presensi Siswa', 'icon' => 'clipboard-check', 'route' => null],
             ['name' => 'Input Nilai', 'icon' => 'pencil-square', 'route' => null],
             ['name' => 'Materi Ajar', 'icon' => 'document-text', 'route' => null],
+            ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => 'pengumuman.index'],
+            ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
         ],
         'guru-bk' => [
             ['name' => 'Catatan Konseling', 'icon' => 'chat-bubble-left-right', 'route' => null],
             ['name' => 'Laporan Perkembangan', 'icon' => 'chart-bar', 'route' => null],
+            ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => 'pengumuman.index'],
+            ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
         ],
         'wali-kelas' => [
             ['name' => 'Rekap Nilai', 'icon' => 'document-chart-bar', 'route' => null],
             ['name' => 'Rekap Presensi', 'icon' => 'clipboard-document-list', 'route' => null],
             ['name' => 'Catatan BK Siswa', 'icon' => 'folder-open', 'route' => null],
+            ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => 'pengumuman.index'],
+            ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
         ],
         'kepala-sekolah' => [
             ['name' => 'Laporan Akademik', 'icon' => 'presentation-chart-line', 'route' => null],
             ['name' => 'Monitoring Sistem', 'icon' => 'shield-check', 'route' => null],
-            ['name' => 'Buat Pengumuman', 'icon' => 'megaphone', 'route' => null],
+            ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => 'pengumuman.index'],
+            ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
         ],
         'orang-tua' => [
             ['name' => 'Nilai Anak', 'icon' => 'academic-cap', 'route' => null],
             ['name' => 'Presensi Anak', 'icon' => 'check-badge', 'route' => null],
-            ['name' => 'Pengumuman', 'icon' => 'bell', 'route' => null],
+            ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
         ]
     ];
 @endphp
