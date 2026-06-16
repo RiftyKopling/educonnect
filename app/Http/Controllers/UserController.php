@@ -7,6 +7,7 @@ use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -55,7 +56,7 @@ class UserController extends Controller
             'role_id' => $request->role_id,
         ]);
 
-        return redirect()->route('users.index')->with('success', 'Pengguna berhasil ditambahkan.');
+        return redirect()->route('users.index')->with('success', 'Pengguna Baru berhasil ditambahkan.');
     }
 
     public function edit(User $user)
@@ -73,6 +74,12 @@ class UserController extends Controller
             'role_id' => 'required|exists:roles,id',
         ]);
 
+        // Proteksi: admin tidak bisa ubah role diri sendiri
+            if ($user->id === Auth::id() && $request->role_id != $user->role_id) {
+                return redirect()->route('users.edit', $user)
+                    ->with('error', 'Anda tidak dapat mengubah role akun Anda sendiri!');
+            }
+
         $user->update([
             'name' => $request->name,
             'email' => $request->email,
@@ -88,6 +95,10 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
+        if ($user->id === Auth::id()) {
+            return redirect()->route('users.index')
+                ->with('error', 'Anda tidak dapat menghapus akun Anda sendiri!');
+        }
         $user->delete();
         return redirect()->route('users.index')->with('success', 'Pengguna berhasil dihapus.');
     }

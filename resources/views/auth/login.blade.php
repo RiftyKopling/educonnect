@@ -22,7 +22,7 @@
             <input id="email"
                 type="email"
                 name="email"
-                value="{{ old('email') }}"
+                value="{{ old('email', request()->cookie('remembered_email')) }}"
                 required
                 autofocus
                 autocomplete="username"

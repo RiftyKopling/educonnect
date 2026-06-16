@@ -54,10 +54,52 @@
     </form>
 
     @if(session('success'))
-        <div class="mb-6 p-4 bg-green-100 border-l-4 border-green-500 text-green-700 rounded-r-xl">
-            {{ session('success') }}
+        <div id="notif-sukses" class="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-2xl flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <span class="font-medium">{{ session('success') }}</span>
+            </div>
+            <button onclick="tutupNotif()" class="text-green-700 hover:text-green-900 ml-4">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
         </div>
     @endif
+
+    @if(session('error'))
+        <div id="notif-error" class="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-2xl flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M12 3a9 9 0 100 18A9 9 0 0012 3z"/></svg>
+                <span class="font-medium">{{ session('error') }}</span>
+            </div>
+            <button onclick="tutupNotifError()" class="text-red-700 hover:text-red-900 ml-4">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+    @endif
+
+    <script>
+        function tutupNotif() {
+            const notif = document.getElementById('notif-sukses');
+            if (notif) {
+                notif.style.transition = 'opacity 0.5s';
+                notif.style.opacity = '0';
+                setTimeout(() => notif.remove(), 500);
+            }
+        }
+
+        function tutupNotifError() {
+            const notif = document.getElementById('notif-error');
+            if (notif) {
+                notif.style.transition = 'opacity 0.5s';
+                notif.style.opacity = '0';
+                setTimeout(() => notif.remove(), 500);
+            }
+        }
+
+        // Auto hilang setelah 5 detik
+        setTimeout(tutupNotif, 5000);
+        setTimeout(tutupNotifError, 5000);
+    </script>
 
     <div class="bg-white rounded-[2rem] shadow-sm overflow-hidden p-6">
         <table class="w-full border-separate border-spacing-y-3">
@@ -65,7 +107,7 @@
                 <tr class="text-white text-sm uppercase tracking-widest">
                     <th class="bg-[#03045E] p-4 rounded-l-full text-left">Nama</th>
                     <th class="bg-[#03045E] p-4 text-left">Email</th>
-                    <th class="bg-[#03045E] p-4 text-left">Role</th>
+                    <th class="bg-[#03045E] p-4 text-left">Role/Peran</th>
                     <th class="bg-[#03045E] p-4 rounded-r-full text-center">Aksi</th>
                 </tr>
             </thead>
@@ -84,14 +126,20 @@
                             <a href="{{ route('users.edit', $user) }}" class="p-2 bg-amber-100 text-amber-600 rounded-xl hover:bg-amber-200 transition-colors">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                             </a>
-                            <button 
-                                type="button"
-                                data-url="{{ route('users.destroy', $user) }}"
-                                data-nama="{{ $user->name }}"
-                                onclick="bukaModal(this.dataset.url, this.dataset.nama)"
-                                class="p-2 bg-red-100 text-red-600 rounded-xl hover:bg-red-200 transition-colors">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                            </button>
+                            @if($user->id !== auth()->id())
+                                <button 
+                                    type="button"
+                                    data-url="{{ route('users.destroy', $user) }}"
+                                    data-nama="{{ $user->name }}"
+                                    onclick="bukaModal(this.dataset.url, this.dataset.nama)"
+                                    class="p-2 bg-red-100 text-red-600 rounded-xl hover:bg-red-200 transition-colors">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                </button>
+                            @else
+                                <span class="p-2 bg-gray-100 text-gray-300 rounded-xl cursor-not-allowed" title="Tidak dapat menghapus akun sendiri">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                </span>
+                            @endif
                         </div>
                     </td>
                 </tr>
