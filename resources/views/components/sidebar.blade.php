@@ -1,7 +1,6 @@
 @php
     $roleSlug = auth()->user()->role?->slug; 
     
-    // Saya menambahkan kunci 'route' ke dalam array ini
     $menus = [
         'admin-sekolah' => [
             ['name' => 'Manajemen Pengguna', 'icon' => 'users', 'route' => 'users.index'],
@@ -10,7 +9,7 @@
             ['name' => 'Manajemen Mata Pelajaran', 'icon' => 'book-open', 'route' => 'mapel.index'],
         ],
         'guru-mapel' => [
-            ['name' => 'Presensi Siswa', 'icon' => 'clipboard-check', 'route' => null],
+            ['name' => 'Presensi Siswa', 'icon' => 'clipboard-document-check', 'route' => null],
             ['name' => 'Input Nilai', 'icon' => 'pencil-square', 'route' => null],
             ['name' => 'Materi Ajar', 'icon' => 'document-text', 'route' => null],
             ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => 'pengumuman.index'],
@@ -23,15 +22,15 @@
             ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
         ],
         'wali-kelas' => [
-            ['name' => 'Rekap Nilai', 'icon' => 'document-chart-bar', 'route' => null],
+            ['name' => 'Rekap Nilai', 'icon' => 'document-chart-pie', 'route' => null],
             ['name' => 'Rekap Presensi', 'icon' => 'clipboard-document-list', 'route' => null],
             ['name' => 'Catatan BK Siswa', 'icon' => 'folder-open', 'route' => null],
             ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => 'pengumuman.index'],
             ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
         ],
         'kepala-sekolah' => [
-            ['name' => 'Laporan Akademik', 'icon' => 'presentation-chart-line', 'route' => null],
-            ['name' => 'Monitoring Sistem', 'icon' => 'shield-check', 'route' => null],
+            ['name' => 'Laporan Akademik', 'icon' => 'chart-bar', 'route' => null], 
+            ['name' => 'Monitoring Sistem', 'icon' => 'shield-check', 'route' => null], 
             ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => 'pengumuman.index'],
             ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
         ],

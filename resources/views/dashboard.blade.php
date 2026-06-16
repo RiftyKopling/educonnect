@@ -44,7 +44,7 @@
         ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => null],
         ],
         'guru-mapel' => [
-        ['name' => 'Presensi Siswa', 'icon' => 'clipboard-check', 'route' => null],
+        ['name' => 'Presensi Siswa', 'icon' => 'clipboard-document-check', 'route' => null],
         ['name' => 'Input Nilai', 'icon' => 'pencil-square', 'route' => null],
         ['name' => 'Materi Ajar', 'icon' => 'document-text', 'route' => null],
         ['name' => 'Pesan & Pengumuman', 'icon' => 'bell', 'route' => null],
@@ -55,14 +55,14 @@
         ['name' => 'Pesan & Pengumuman', 'icon' => 'bell', 'route' => null],
         ],
         'wali-kelas' => [
-        ['name' => 'Rekap Nilai', 'icon' => 'document-chart-bar', 'route' => null],
+        ['name' => 'Rekap Nilai', 'icon' => 'document-chart-pie', 'route' => null],
         ['name' => 'Rekap Presensi', 'icon' => 'clipboard-document-list', 'route' => null],
         ['name' => 'Catatan BK Siswa', 'icon' => 'folder-open', 'route' => null],
         ['name' => 'Profil Kelas', 'icon' => 'user-group', 'route' => null],
         ['name' => 'Pesan & Pengumuman', 'icon' => 'bell', 'route' => null],
         ],
         'kepala-sekolah' => [
-        ['name' => 'Laporan Akademik', 'icon' => 'presentation-chart-line', 'route' => null],
+        ['name' => 'Laporan Akademik', 'icon' => 'chart-bar', 'route' => null],
         ['name' => 'Pesan & Pengumuman', 'icon' => 'bell', 'route' => null],
         ['name' => 'Buat Pengumuman', 'icon' => 'megaphone', 'route' => null],
         ],
@@ -76,7 +76,7 @@
         // Cari kartu berdasarkan slug, jika tidak ada gunakan default
         $currentCards = $cards[$userRoleSlug] ?? [
         ['name' => 'Data Akademik', 'icon' => 'academic-cap', 'route' => null],
-        ['name' => 'Presensi', 'icon' => 'clipboard-check', 'route' => null],
+        ['name' => 'Presensi', 'icon' => 'clipboard-document-check', 'route' => null],
         ['name' => 'Konseling', 'icon' => 'chat-bubble-left-right', 'route' => null],
         ['name' => 'Pengumuman', 'icon' => 'bell', 'route' => null],
         ];

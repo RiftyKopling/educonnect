@@ -42,8 +42,9 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'role:admin-sekolah'])->group(function () {
     Route::resource('users', UserController::class);
     Route::resource('siswa', SiswaController::class);
-    Route::resource('kelas', KelasController::class);
     Route::resource('mapel', MapelController::class);
+    Route::resource('kelas', KelasController::class)->parameters([
+    'kelas' => 'kelas']);
 });
 
 require __DIR__.'/auth.php';
