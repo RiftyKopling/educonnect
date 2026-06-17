@@ -9,7 +9,7 @@
             ['name' => 'Manajemen Mata Pelajaran', 'icon' => 'book-open', 'route' => 'mapel.index'],
         ],
         'guru-mapel' => [
-            ['name' => 'Presensi Siswa', 'icon' => 'clipboard-document-check', 'route' => null],
+            ['name' => 'Presensi Siswa', 'icon' => 'clipboard-document-check', 'route' => 'presensi.index'],
             ['name' => 'Input Nilai', 'icon' => 'pencil-square', 'route' => null],
             ['name' => 'Materi Ajar', 'icon' => 'document-text', 'route' => null],
             ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => 'pengumuman.index'],
@@ -23,7 +23,7 @@
         ],
         'wali-kelas' => [
             ['name' => 'Rekap Nilai', 'icon' => 'document-chart-pie', 'route' => null],
-            ['name' => 'Rekap Presensi', 'icon' => 'clipboard-document-list', 'route' => null],
+            ['name' => 'Rekap Presensi', 'icon' => 'clipboard-document-list', 'route' => 'presensi.index'],
             ['name' => 'Catatan BK Siswa', 'icon' => 'folder-open', 'route' => null],
             ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => 'pengumuman.index'],
             ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
@@ -36,7 +36,7 @@
         ],
         'orang-tua' => [
             ['name' => 'Nilai Anak', 'icon' => 'academic-cap', 'route' => null],
-            ['name' => 'Presensi Anak', 'icon' => 'check-badge', 'route' => null],
+            ['name' => 'Presensi Anak', 'icon' => 'check-badge', 'route' => 'presensi.index'],
             ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
         ]
     ];
