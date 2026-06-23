@@ -7,6 +7,8 @@
             ['name' => 'Manajemen Siswa', 'icon' => 'user-group', 'route' => 'siswa.index'],
             ['name' => 'Manajemen Kelas', 'icon' => 'academic-cap', 'route' => 'kelas.index'],
             ['name' => 'Manajemen Mata Pelajaran', 'icon' => 'book-open', 'route' => 'mapel.index'],
+            ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => 'pengumuman.index'],
+            ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
         ],
         'guru-mapel' => [
             ['name' => 'Presensi Siswa', 'icon' => 'clipboard-document-check', 'route' => null],
@@ -22,9 +24,10 @@
             ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
         ],
         'wali-kelas' => [
-            ['name' => 'Rekap Nilai', 'icon' => 'document-chart-pie', 'route' => null],
+            ['name' => 'Rekap Nilai', 'icon' => 'document-chart-bar', 'route' => null],
             ['name' => 'Rekap Presensi', 'icon' => 'clipboard-document-list', 'route' => null],
             ['name' => 'Catatan BK Siswa', 'icon' => 'folder-open', 'route' => null],
+            ['name' => 'Profil Kelas', 'icon' => 'user-group', 'route' => null],
             ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => 'pengumuman.index'],
             ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
         ],

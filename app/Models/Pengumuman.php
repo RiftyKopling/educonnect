@@ -10,7 +10,7 @@ class Pengumuman extends Model
     use HasFactory; // Tambahkan trait ini jika ingin menggunakan seeder/factory nanti
 
     protected $table = 'pengumuman';
-    protected $fillable = ['user_id', 'judul', 'konten', 'target_type', 'kelas_id'];
+    protected $fillable = ['user_id', 'judul', 'konten', 'target_type', 'kelas_id','file_lampiran'];
 
     public function user()
     {

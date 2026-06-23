@@ -41,15 +41,18 @@
             </svg>
         </div>
 
+        <!-- Tampilkan filter target hanya untuk role tertentu -->
+        @php $role = auth()->user()->role?->slug; @endphp
+        
+        @if(in_array($role, ['kepala-sekolah', 'wali-kelas', 'guru-mapel', 'guru-bk']))
         <select name="target" class="rounded-full border-gray-200 px-6 py-3 focus:ring-[#03045E] focus:border-[#03045E] shadow-sm">
             <option value="">Semua Target</option>
             <option value="all" {{ request('target') == 'all' ? 'selected' : '' }}>Semua Pengguna</option>
-            <option value="guru" {{ request('target') == 'guru' ? 'selected' : '' }}>Guru</option>
-            <option value="siswa" {{ request('target') == 'siswa' ? 'selected' : '' }}>Siswa</option>
-            <option value="orang-tua" {{ request('target') == 'orang-tua' ? 'selected' : '' }}>Orang Tua</option>
-            <option value="admin-sekolah" {{ request('target') == 'admin-sekolah' ? 'selected' : '' }}>Admin Sekolah</option>
+            <option value="all-parents" {{ request('target') == 'all-parents' ? 'selected' : '' }}>Semua Orang Tua</option>
+            <option value="class-parents" {{ request('target') == 'class-parents' ? 'selected' : '' }}>Orang Tua Kelas</option>
             <option value="kepala-sekolah" {{ request('target') == 'kepala-sekolah' ? 'selected' : '' }}>Kepala Sekolah</option>
         </select>
+        @endif
 
         <button type="submit" class="px-6 py-3 bg-[#03045E] text-white rounded-full font-bold shadow-lg hover:scale-105 transition-all">
             Cari
@@ -96,6 +99,48 @@
         </div>
     @endif
 
+    <!-- Notifikasi Error Modal (untuk akses ditolak) -->
+    @if(session('error_modal'))
+        <div id="error-modal-container" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+            <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4 transform transition-all duration-300 scale-100">
+                <div class="flex flex-col items-center text-center gap-4">
+                    <!-- Icon Error -->
+                    <div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center animate-pulse">
+                        <svg class="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-2xl font-black text-[#03045E]">Akses Ditolak</h3>
+                        <p class="text-gray-600 text-sm mt-2 leading-relaxed">
+                            {{ session('error_modal') }}
+                        </p>
+                    </div>
+
+                    <!-- Detail tambahan -->
+                    <div class="w-full bg-gray-50 rounded-xl p-4 text-left text-sm text-gray-600">
+                        <div class="flex items-start gap-2">
+                            <svg class="w-5 h-5 text-[#03045E] flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <div>
+                                <p class="font-medium text-[#03045E]">Informasi:</p>
+                                <p class="text-xs">Hanya pembuat pengumuman atau Kepala Sekolah yang dapat mengelola pengumuman ini.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tombol Kembali -->
+                    <button onclick="tutupErrorModal(); setTimeout(redirectToIndex, 300);" 
+                            class="w-full py-3 bg-[#03045E] text-white rounded-xl font-bold hover:bg-[#05086b] transition-all transform hover:scale-[1.02] shadow-lg">
+                        Kembali ke Manajemen Pengumuman
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <script>
         function tutupNotif() {
             const notif = document.getElementById('notif-sukses');
@@ -115,9 +160,47 @@
             }
         }
 
-        // Auto hilang setelah 5 detik
-        setTimeout(tutupNotif, 5000);
-        setTimeout(tutupNotifError, 5000);
+        // Fungsi untuk error modal
+        function tutupErrorModal(redirect = true) {
+            const modal = document.getElementById('error-modal-container');
+            if (modal) {
+                modal.style.transition = 'opacity 0.3s ease';
+                modal.style.opacity = '0';
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                    modal.remove(); // Bersihkan DOM
+                    
+                    // Redirect hanya jika parameter true
+                    if (redirect) {
+                        window.location.href = "{{ route('pengumuman.index') }}";
+                    }
+                }, 300);
+            }
+        }
+
+        // Setup modal saat DOM siap
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('error-modal-container');
+            if (modal) {
+                // Tutup dengan klik di luar modal
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        tutupErrorModal(true);
+                    }
+                });
+
+                // Auto close setelah 8 detik (lebih baik dari 10)
+                setTimeout(function() {
+                    if (document.getElementById('error-modal-container')) {
+                        tutupErrorModal(true);
+                    }
+                }, 8000);
+            }
+
+            // Auto hilang notifikasi setelah 5 detik
+            setTimeout(tutupNotif, 5000);
+            setTimeout(tutupNotifError, 5000);
+        });
     </script>
 
     <div class="bg-white rounded-[2rem] shadow-sm overflow-hidden p-6">
@@ -144,6 +227,7 @@
                             @endif
                         </a>
                     </th>
+                    <th class="bg-[#03045E] p-4 text-left">Lampiran</th>
                     <th class="bg-[#03045E] p-4 rounded-r-full text-center">Aksi</th>
                 </tr>
             </thead>
@@ -158,6 +242,21 @@
                     </td>
                     <td class="p-4 text-sm text-gray-600">
                         {{ $p->created_at->format('d M Y H:i') }}
+                    </td>
+                    <td class="p-4">
+                        @if($p->file_lampiran)
+                            <a href="{{ asset('storage/' . $p->file_lampiran) }}" 
+                            target="_blank" 
+                            class="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold hover:bg-green-200 transition-all">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7l-5-5z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 2v5h5M9 13l3-3m0 0l3 3m-3-3v8"/>
+                                </svg>
+                                Lihat
+                            </a>
+                        @else
+                            <span class="text-xs text-gray-400">-</span>
+                        @endif
                     </td>
                     <td class="p-4 rounded-r-2xl text-center">
                         <div class="flex justify-center gap-2">
@@ -185,7 +284,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="4" class="p-8 text-center text-gray-400">
+                    <td colspan="5" class="p-8 text-center text-gray-400">
                         <div class="flex flex-col items-center gap-2">
                             <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
