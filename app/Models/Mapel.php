@@ -15,4 +15,10 @@ class Mapel extends Model
         'kode_mapel',
         'nama_mapel',
     ];
+
+    // Relasi ke Guru (User)
+    public function gurus()
+    {
+        return $this->belongsToMany(User::class, 'mapel_user');
+    }
 }

@@ -55,7 +55,7 @@
         ['name' => 'Pesan & Pengumuman', 'icon' => 'bell', 'route' => null],
         ],
         'wali-kelas' => [
-        ['name' => 'Rekap Nilai', 'icon' => 'document-chart-pie', 'route' => null],
+        ['name' => 'Rekap Nilai', 'icon' => 'document-chart-bar', 'route' => null],
         ['name' => 'Rekap Presensi', 'icon' => 'clipboard-document-list', 'route' => null],
         ['name' => 'Catatan BK Siswa', 'icon' => 'folder-open', 'route' => null],
         ['name' => 'Profil Kelas', 'icon' => 'user-group', 'route' => null],

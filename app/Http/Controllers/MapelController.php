@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Mapel;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class MapelController extends Controller
@@ -62,5 +63,29 @@ class MapelController extends Controller
         $mapel->delete();
 
         return redirect()->route('mapel.index')->with('success', 'Mata Pelajaran berhasil dihapus.');
+    }
+
+    public function assignGuru($id)
+    {
+        $mapel = Mapel::findOrFail($id);
+        $gurus = User::whereHas('role', function($q) {
+            $q->where('slug', 'guru-mapel');
+        })->get();
+        
+        return view('mapel.assign', compact('mapel', 'gurus'));
+    }
+
+    public function storeAssignGuru(Request $request, $id)
+    {
+        $mapel = Mapel::findOrFail($id);
+        
+        $request->validate([
+            'guru_ids' => 'array',
+            'guru_ids.*' => 'exists:users,id',
+        ]);
+
+        $mapel->gurus()->sync($request->guru_ids ?? []);
+
+        return redirect()->route('mapel.index')->with('success', 'Penugasan guru pada mata pelajaran berhasil diperbarui.');
     }
 }

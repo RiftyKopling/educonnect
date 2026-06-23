@@ -5,8 +5,10 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\KelasController;
 use App\Http\Controllers\MapelController;
-use App\Http\Controllers\PengumumanController; // <-- Diperbaiki (App, bukan APP)
-use App\Http\Controllers\DashboardController;  // <-- Wajib ditambahkan agar Dashboard jalan
+use App\Http\Controllers\PengumumanController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PresensiController;
+use App\Http\Controllers\NilaiController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -29,6 +31,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     // Rute Pengumuman diletakkan di sini agar Guru dan Kepala Sekolah bisa mengaksesnya
     Route::resource('pengumuman', PengumumanController::class);
+    
+    // Rute Presensi (diakses oleh Guru Mapel, Wali Kelas, Orang Tua)
+    Route::get('presensi/cetak', [PresensiController::class, 'cetakLaporan'])->name('presensi.cetak');
+    Route::resource('presensi', PresensiController::class);
+    
+    // Rute Nilai (diakses oleh Guru Mapel, Wali Kelas, Orang Tua)
+    Route::get('nilai/cetak', [NilaiController::class, 'cetakLaporan'])->name('nilai.cetak');
+    Route::resource('nilai', NilaiController::class);
 });
 
 // --- Rute Profil Bawaan Laravel ---
@@ -42,6 +52,8 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'role:admin-sekolah'])->group(function () {
     Route::resource('users', UserController::class);
     Route::resource('siswa', SiswaController::class);
+    Route::get('mapel/{id}/assign', [MapelController::class, 'assignGuru'])->name('mapel.assign');
+    Route::post('mapel/{id}/assign', [MapelController::class, 'storeAssignGuru'])->name('mapel.storeAssign');
     Route::resource('mapel', MapelController::class);
     Route::resource('kelas', KelasController::class)->parameters([
     'kelas' => 'kelas']);

@@ -40,6 +40,7 @@
                 <tr class="text-white text-xs uppercase tracking-[0.2em] font-black">
                     <th class="bg-[#03045E] p-5 rounded-l-full text-left pl-8">Kode Mapel</th>
                     <th class="bg-[#03045E] p-5 text-left">Nama Mata Pelajaran</th>
+                    <th class="bg-[#03045E] p-5 text-left">Guru Pengampu</th>
                     <th class="bg-[#03045E] p-5 rounded-r-full text-center">Aksi</th>
                 </tr>
             </thead>
@@ -50,9 +51,22 @@
                         <span class="bg-[#03045E]/10 px-4 py-2 rounded-xl text-sm">{{ $mapel->kode_mapel }}</span>
                     </td>
                     <td class="p-5 text-lg">{{ $mapel->nama_mapel }}</td>
+                    <td class="p-5">
+                        <div class="flex flex-wrap gap-2">
+                            @foreach($mapel->gurus as $guru)
+                                <span class="bg-[#03045E] text-white px-3 py-1 rounded-full text-xs">{{ $guru->name }}</span>
+                            @endforeach
+                            @if($mapel->gurus->isEmpty())
+                                <span class="text-gray-400 italic text-sm font-normal">Belum ada guru</span>
+                            @endif
+                        </div>
+                    </td>
                     <td class="p-5 rounded-r-2xl text-center">
                         <div class="flex justify-center gap-3">
-                            <a href="{{ route('mapel.edit', $mapel->id) }}" class="p-3 bg-amber-100 text-amber-600 rounded-2xl hover:bg-amber-500 hover:text-white transition-all shadow-sm">
+                            <a href="{{ route('mapel.assign', $mapel->id) }}" title="Assign Guru" class="p-3 bg-indigo-100 text-indigo-600 rounded-2xl hover:bg-indigo-500 hover:text-white transition-all shadow-sm">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                            </a>
+                            <a href="{{ route('mapel.edit', $mapel->id) }}" title="Edit Mapel" class="p-3 bg-amber-100 text-amber-600 rounded-2xl hover:bg-amber-500 hover:text-white transition-all shadow-sm">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                             </a>
                             <form action="{{ route('mapel.destroy', $mapel->id) }}" method="POST" onsubmit="return confirm('Hapus mata pelajaran ini?')">

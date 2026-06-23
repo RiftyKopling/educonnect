@@ -73,4 +73,10 @@ class User extends Authenticatable
     {
         return $this->hasOne(Kelas::class, 'wali_kelas_id');
     }
+
+    // Relasi ke Mata Pelajaran (Jika user adalah Guru)
+    public function mapels()
+    {
+        return $this->belongsToMany(Mapel::class, 'mapel_user');
+    }
 }
