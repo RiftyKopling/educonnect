@@ -41,7 +41,7 @@
         ['name' => 'Manajemen Siswa', 'icon' => 'user-group', 'route' => 'siswa.index'],
         ['name' => 'Manajemen Kelas', 'icon' => 'academic-cap', 'route' => 'kelas.index'],
         ['name' => 'Manajemen Mata Pelajaran', 'icon' => 'book-open', 'route' => 'mapel.index'],
-        ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => null],
+        ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => 'pengumuman.index'],
         ],
         'guru-mapel' => [
         ['name' => 'Presensi Siswa', 'icon' => 'clipboard-document-check', 'route' => null],

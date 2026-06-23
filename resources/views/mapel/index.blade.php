@@ -1,14 +1,31 @@
 <x-app-layout>
-    <div class="mb-8 flex justify-between items-center">
+    <!-- Breadcrumb -->
+    <div class="flex items-center gap-2 text-sm text-gray-500 mb-4">
+        <a href="{{ route('dashboard') }}" class="hover:text-[#03045E] font-medium flex items-center gap-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Dashboard
+        </a>
+        <span>›</span>
+        <span class="text-[#03045E] font-bold">Manajemen Mata Pelajaran</span>
+    </div>
+
+    <!-- Header -->
+    <div class="mb-6 flex justify-between items-center">
         <div>
-            <h2 class="text-3xl font-black text-[#03045E] tracking-tight uppercase">Mata Pelajaran</h2>
-            <p class="text-gray-500 font-medium">Kelola daftar mata pelajaran kurikulum sekolah.</p>
+            <h2 class="text-3xl font-black text-[#03045E] tracking-tight uppercase">Manajemen Mata Pelajaran</h2>
+            <p class="text-gray-500">Mengelola informasi dan daftar mata pelajaran kurikulum sekolah.</p>
         </div>
-        <a href="{{ route('mapel.create') }}" class="px-8 py-3 bg-[#03045E] text-white rounded-full font-bold shadow-lg hover:scale-105 transition-all flex items-center gap-2 tracking-widest text-sm">
+        <a href="{{ route('mapel.create') }}" class="px-6 py-3 bg-[#03045E] text-white rounded-full font-bold shadow-lg hover:scale-105 transition-all flex items-center gap-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-            TAMBAH MAPEL
+            TAMBAH MATA PELAJARAN
         </a>
     </div>
+
+    <!-- Search dan Filter  -->
+    <form method="GET" action="{{ route('mapel.index') }}"
+    class="flex gap-3 mb-6">
+
+    </form>
 
     @if(session('success'))
         <div class="mb-6 p-4 bg-green-500 text-white rounded-2xl shadow-md flex items-center gap-3 font-bold italic">
