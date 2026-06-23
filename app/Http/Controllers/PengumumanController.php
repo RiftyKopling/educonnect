@@ -124,7 +124,10 @@ class PengumumanController extends Controller {
             'judul' => 'required|max:255',
             'konten' => 'required',
             'target' => 'required',
-            'file_lampiran' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:4000' // 2MB
+            'file_lampiran' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:4096'
+        ], [
+            'file_lampiran.max' => 'Ukuran file lampiran maksimal 4MB. Silakan kompres file Anda.',
+            'file_lampiran.mimes' => 'Format file tidak didukung. Gunakan JPG, PNG, atau PDF.',
         ]);
 
         $target_type = $request->target;
@@ -189,7 +192,11 @@ class PengumumanController extends Controller {
             $kelas_diampu = Kelas::where('wali_kelas_id', $user->id)->first();
         }
 
-        return view('pengumuman.edit', compact('pengumuman', 'user', 'kelas_diampu', 'targets'));
+        $fileSize = null;
+        if ($pengumuman->file_lampiran) {
+            $fileSize = Storage::disk('public')->size($pengumuman->file_lampiran) / 1024;
+        }
+        return view('pengumuman.edit', compact('pengumuman', 'user', 'kelas_diampu', 'fileSize'));
     }
 
     public function update(Request $request, int $id)
@@ -207,13 +214,17 @@ class PengumumanController extends Controller {
             'judul' => 'required|max:255',
             'konten' => 'required',
             'target' => 'required',
-            'file_lampiran' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:4000'
+            'file_lampiran' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:4096'
+        ], [
+            'file_lampiran.max' => 'Ukuran file lampiran maksimal 4MB. Silakan kompres file Anda.',
+            'file_lampiran.mimes' => 'Format file tidak didukung. Gunakan JPG, PNG, atau PDF.',
         ]);
 
         $roleSlug = $user->role->slug;
         $target_type = $request->target;
         $kelas_id = null;
 
+        // Logika target sesuai role
         if ($roleSlug == 'admin-sekolah') {
             $target_type = 'all';
         } else {
@@ -227,7 +238,16 @@ class PengumumanController extends Controller {
             'kelas_id' => $kelas_id,
         ];
 
-        // Upload file baru jika ada
+        // CEK: Apakah user ingin menghapus lampiran?
+        if ($request->has('hapus_lampiran') && $request->hapus_lampiran == 1) {
+            // Hapus file lama jika ada
+            if ($pengumuman->file_lampiran && Storage::disk('public')->exists($pengumuman->file_lampiran)) {
+                Storage::disk('public')->delete($pengumuman->file_lampiran);
+            }
+            $data['file_lampiran'] = null;
+        }
+
+        // CEK: Apakah user upload file baru?
         if ($request->hasFile('file_lampiran')) {
             // Hapus file lama jika ada
             if ($pengumuman->file_lampiran && Storage::disk('public')->exists($pengumuman->file_lampiran)) {
@@ -246,28 +266,6 @@ class PengumumanController extends Controller {
             ->with('success', 'Pengumuman berhasil diperbarui.');
     }
 
-    public function destroy(int $id) 
-    {
-        $user = $this->getUserWithRole();
-        $pengumuman = Pengumuman::findOrFail($id);
-
-        // Cek apakah user bisa menghapus
-        if (!$this->canManage($pengumuman, $user)) {
-            return redirect()
-                ->route('pengumuman.index')
-                ->with('error_modal', 'Anda tidak memiliki izin untuk menghapus pengumuman ini.');
-        }
-
-        $pengumuman->delete();
-
-        return redirect()
-            ->route('pengumuman.index')
-            ->with('success', 'Pengumuman berhasil dihapus.');
-    }
-
-        /**
-     * Papan Pengumuman - Melihat pengumuman yang masuk
-     */
     public function masuk(Request $request) 
     {
         $user = $this->getUserWithRole();
@@ -320,5 +318,39 @@ class PengumumanController extends Controller {
         $data_pengumuman = $query->paginate(10)->withQueryString();
 
         return view('pengumuman.masuk', compact('data_pengumuman'));
+    }
+
+    public function destroy(int $id) 
+    {
+        try {
+            $user = $this->getUserWithRole();
+            $pengumuman = Pengumuman::findOrFail($id);
+
+            // Cek apakah user bisa menghapus
+            if (!$this->canManage($pengumuman, $user)) {
+                return redirect()
+                    ->route('pengumuman.index')
+                    ->with('error_modal', 'Anda tidak memiliki izin untuk menghapus pengumuman ini.');
+            }
+
+            // Hapus file lampiran jika ada
+            if ($pengumuman->file_lampiran) {
+                $filePath = $pengumuman->file_lampiran;
+                if (Storage::disk('public')->exists($filePath)) {
+                    Storage::disk('public')->delete($filePath);
+                }
+            }
+
+            $pengumuman->delete();
+
+            return redirect()
+                ->route('pengumuman.index')
+                ->with('success', 'Pengumuman berhasil dihapus.');
+                
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('pengumuman.index')
+                ->with('error', 'Gagal menghapus pengumuman: ' . $e->getMessage());
+        }
     }
 }

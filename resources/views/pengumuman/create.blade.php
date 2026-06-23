@@ -91,6 +91,7 @@
                             <input type="file" 
                                 name="file_lampiran" 
                                 accept=".jpg,.jpeg,.png,.pdf"
+                                onchange="tampilkanUkuranFile(this)"
                                 class="w-full rounded-2xl border-gray-200 focus:ring-[#03045E] focus:border-[#03045E] p-4 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#03045E] file:text-white hover:file:bg-blue-900 transition-all">
                             <p class="text-xs text-gray-400 mt-1">*Format yang didukung: JPG, PNG, PDF (Maks. 4MB)</p>
                         </div>
@@ -108,29 +109,33 @@
     </div>
 
     <script>
-        document.querySelector('form').addEventListener('submit', function(e) {
-            const fileInput = document.querySelector('input[name="file_lampiran"]');
-            const file = fileInput.files[0];
+        function tampilkanUkuranFile(input) {
+            const info = document.getElementById('info-file');
+            const file = input.files[0];
             
             if (file) {
-                // Cek ukuran file (2MB = 2 * 1024 * 1024 bytes)
-                const maxSize = 2 * 1024 * 1024;
-                if (file.size > maxSize) {
-                    e.preventDefault();
-                    alert('Ukuran file terlalu besar! Maksimal 2MB.');
-                    fileInput.value = ''; // Reset input
-                    return false;
+                const sizeInKB = (file.size / 1024).toFixed(2);
+                const sizeInMB = (file.size / (1024 * 1024)).toFixed(2);
+                const maxSizeMB = 4; // Ubah dari 2 ke 4
+                
+                let ukuranText = `Ukuran: ${sizeInKB} KB (${sizeInMB} MB)`;
+                let warna = 'text-gray-500';
+                
+                if (file.size > maxSizeMB * 1024 * 1024) {
+                    ukuranText += ' ⚠️ Melebihi batas 4MB!';
+                    warna = 'text-red-500 font-bold';
                 }
                 
-                // Cek tipe file
                 const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
                 if (!allowedTypes.includes(file.type)) {
-                    e.preventDefault();
-                    alert('Format file tidak didukung! Gunakan JPG, PNG, atau PDF.');
-                    fileInput.value = '';
-                    return false;
+                    ukuranText += ' ⚠️ Format tidak didukung!';
+                    warna = 'text-red-500 font-bold';
                 }
+                
+                info.innerHTML = `<span class="${warna}">${ukuranText}</span>`;
+            } else {
+                info.innerHTML = '';
             }
-        });
-        </script>
+        }
+    </script>
 </x-app-layout>
