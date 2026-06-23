@@ -44,6 +44,7 @@
             ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => 'pengumuman.index'],
             ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
             ],
+
             'guru-mapel' => [
             ['name' => 'Presensi Siswa', 'icon' => 'clipboard-document-check', 'route' => null],
             ['name' => 'Input Nilai', 'icon' => 'pencil-square', 'route' => null],
@@ -51,12 +52,14 @@
             ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => 'pengumuman.index'],
             ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => null],
             ],
+
             'guru-bk' => [
             ['name' => 'Catatan Konseling', 'icon' => 'chat-bubble-left-right', 'route' => null],
             ['name' => 'Laporan Perkembangan Siswa', 'icon' => 'chart-bar', 'route' => null],
             ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => 'pengumuman.index'],
             ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => null],
             ],
+
             'wali-kelas' => [
             ['name' => 'Rekap Nilai', 'icon' => 'document-chart-bar', 'route' => null],
             ['name' => 'Rekap Presensi', 'icon' => 'clipboard-document-list', 'route' => null],
@@ -65,6 +68,8 @@
             ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => 'pengumuman.index'],
             ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
             ],
+
+
             'kepala-sekolah' => [
             ['name' => 'Laporan Akademik', 'icon' => 'chart-bar', 'route' => null],
             ['name' => 'Monitoring Sistem', 'icon' => 'shield-check', 'route' => null], 
