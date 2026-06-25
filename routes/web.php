@@ -9,6 +9,10 @@ use App\Http\Controllers\PengumumanController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PresensiController;
 use App\Http\Controllers\NilaiController;
+use App\Http\Controllers\PelanggaranController;
+use App\Http\Controllers\CatatanPelanggaranController;
+use App\Http\Controllers\KonselingController;
+use App\Http\Controllers\MateriAjarController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -39,6 +43,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Rute Nilai (diakses oleh Guru Mapel, Wali Kelas, Orang Tua)
     Route::get('nilai/cetak', [NilaiController::class, 'cetakLaporan'])->name('nilai.cetak');
     Route::resource('nilai', NilaiController::class);
+
+    // Manajemen Konseling
+    Route::resource('pelanggaran', PelanggaranController::class)->except(['show']);
+    
+    Route::get('catatan-pelanggaran/cetak', [CatatanPelanggaranController::class, 'cetak'])->name('catatan-pelanggaran.cetak');
+    Route::resource('catatan-pelanggaran', CatatanPelanggaranController::class);
+    
+    Route::get('konseling/cetak', [KonselingController::class, 'cetak'])->name('konseling.cetak');
+    Route::resource('konseling', KonselingController::class);
+
+    // Manajemen Materi Ajar
+    Route::resource('materi-ajar', MateriAjarController::class);
+
+    // Endpoint AJAX untuk Cascading Dropdown Kelas -> Siswa
+    Route::get('api/kelas/{kelasId}/siswa', [CatatanPelanggaranController::class, 'getSiswaByKelas'])->name('api.kelas.siswa');
 });
 
 // --- Rute Profil Bawaan Laravel ---
