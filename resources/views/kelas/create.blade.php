@@ -18,7 +18,7 @@
                 Kembali
             </a>
             <h2 class="text-3xl font-black text-[#03045E] tracking-tight">Tambah Kelas Baru</h2>
-            <p class="text-gray-500 mt-1">Mendaftarkan kelas baru untuk digunakan dalam sistem akademik.</p>
+            <p class="text-gray-500 text-sm mt-1">Mendaftarkan kelas baru untuk digunakan dalam sistem akademik.</p>
         </div>
 
         <!-- Session Error -->

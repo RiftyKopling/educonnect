@@ -13,11 +13,12 @@
     <div class="mb-6 flex justify-between items-center">
         <div> 
             <h2 class="text-3xl font-black text-[#03045E] tracking-tight">Manajemen Pengguna</h2>
-            <p class="text-gray-500">Mengelola informasi akun sekolah serta mengatur hak akses dan wewenang pengguna secara terpusat.</p>
+            <p class="text-gray-500 text-sm mt-1">Mengelola informasi akun sekolah serta mengatur hak akses dan wewenang pengguna secara terpusat.</p>
         </div>
 
         <a href="{{ route('users.create') }}" class="px-6 py-3 bg-[#03045E] text-white rounded-full font-bold shadow-lg hover:scale-105 transition-all flex items-center gap-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
             TAMBAH PENGGUNA
         </a>
     </div>
@@ -102,63 +103,65 @@
     </script>
 
     <div class="bg-white rounded-[2rem] shadow-sm overflow-hidden p-6">
-        <table class="w-full border-separate border-spacing-y-3">
-            <thead>
-                <tr class="text-white text-sm uppercase tracking-widest">
-                    <th class="bg-[#03045E] p-4 rounded-l-full text-left">Nama</th>
-                    <th class="bg-[#03045E] p-4 text-left">Email</th>
-                    <th class="bg-[#03045E] p-4 text-left">Role/Peran</th>
-                    <th class="bg-[#03045E] p-4 rounded-r-full text-center">Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="text-[#03045E] font-medium">
-                @forelse($users as $user)
-                <tr class="bg-gray-50 hover:bg-gray-100 transition-all">
-                    <td class="p-4 rounded-l-2xl">{{ $user->name }}</td>
-                    <td class="p-4">{{ $user->email }}</td>
-                    <td class="p-4">
-                        <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-bold uppercase">
-                            {{ str_replace('-', ' ', $user->role->name ?? 'N/A') }}
-                        </span>
-                    </td>
-                    <td class="p-4 rounded-r-2xl text-center">
-                        <div class="flex justify-center gap-2">
-                            <a href="{{ route('users.edit', $user) }}" class="p-2 bg-amber-100 text-amber-600 rounded-xl hover:bg-amber-200 transition-colors">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                            </a>
-                            @if($user->id !== auth()->id())
-                                <button 
-                                    type="button"
-                                    data-url="{{ route('users.destroy', $user) }}"
-                                    data-nama="{{ $user->name }}"
-                                    onclick="bukaModal(this.dataset.url, this.dataset.nama)"
-                                    class="p-2 bg-red-100 text-red-600 rounded-xl hover:bg-red-200 transition-colors">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                </button>
-                            @else
-                                <span class="p-2 bg-gray-100 text-gray-300 rounded-xl cursor-not-allowed" title="Tidak dapat menghapus akun sendiri">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                </span>
-                            @endif
-                        </div>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="4" class="p-8 text-center text-gray-400">
-                        <div class="flex flex-col items-center gap-2">
-                            <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                            <span class="font-bold text-gray-400">Tidak ada pengguna ditemukan</span>
-                            @if(request('search') || request('role'))
-                                <span class="text-sm text-gray-400">Coba ubah kata kunci pencarian atau filter role</span>
-                                <a href="{{ route('users.index') }}" class="mt-2 px-4 py-2 bg-gray-100 text-gray-600 rounded-full text-sm font-bold hover:bg-gray-200 transition-all">Reset Pencarian</a>
-                            @endif
-                        </div>
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
+        <div class="overflow-x-auto">
+            <table class="w-full border-separate border-spacing-y-3">
+                <thead>
+                    <tr class="text-white text-sm uppercase tracking-widest">
+                        <th class="bg-[#03045E] p-4 rounded-l-full text-left">Nama</th>
+                        <th class="bg-[#03045E] p-4 text-left">Email</th>
+                        <th class="bg-[#03045E] p-4 text-left">Role/Peran</th>
+                        <th class="bg-[#03045E] p-4 rounded-r-full text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="text-[#03045E] font-medium">
+                    @forelse($users as $user)
+                    <tr class="bg-gray-50 hover:bg-gray-100 transition-all">
+                        <td class="p-4 rounded-l-2xl">{{ $user->name }}</td>
+                        <td class="p-4">{{ $user->email }}</td>
+                        <td class="p-4">
+                            <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-bold uppercase">
+                                {{ str_replace('-', ' ', $user->role->name ?? 'N/A') }}
+                            </span>
+                        </td>
+                        <td class="p-4 rounded-r-2xl text-center">
+                            <div class="flex justify-center gap-2">
+                                <a href="{{ route('users.edit', $user) }}" class="p-2 bg-amber-100 text-amber-600 rounded-xl hover:bg-amber-500 hover:text-white transition-colors">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                </a>
+                                @if($user->id !== auth()->id())
+                                    <button 
+                                        type="button"
+                                        data-url="{{ route('users.destroy', $user) }}"
+                                        data-nama="{{ $user->name }}"
+                                        onclick="bukaModal(this.dataset.url, this.dataset.nama)"
+                                        class="p-2 bg-red-100 text-red-600 rounded-xl hover:bg-red-500 hover:text-white transition-colors">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                    </button>
+                                @else
+                                    <span class="p-2 bg-gray-100 text-gray-300 rounded-xl cursor-not-allowed" title="Tidak dapat menghapus akun sendiri">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                    </span>
+                                @endif
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="4" class="p-8 text-center text-gray-400">
+                            <div class="flex flex-col items-center gap-2">
+                                <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                <span class="font-bold text-gray-400">Tidak ada pengguna ditemukan</span>
+                                @if(request('search') || request('role'))
+                                    <span class="text-sm text-gray-400">Coba ubah kata kunci pencarian atau filter role</span>
+                                    <a href="{{ route('users.index') }}" class="mt-2 px-4 py-2 bg-gray-100 text-gray-600 rounded-full text-sm font-bold hover:bg-gray-200 transition-all">Reset Pencarian</a>
+                                @endif
+                            </div>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
         <div class="mt-6">
             {{ $users->links() }}
         </div>
@@ -179,9 +182,9 @@
                     <button onclick="tutupModal()" class="flex-1 py-3 bg-navy text-white rounded-xl font-bold hover:bg-navy-200 transition-all">
                         Batal
                     </button>
-                    <form id="form-hapus" method="POST">
+                    <form id="form-hapus" method="POST" class="flex-1">
                         @csrf @method('DELETE')
-                        <button type="submit" class="flex-1 py-3 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition-all px-6">
+                        <button type="submit" class="w-full py-3 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition-all">
                             Hapus
                         </button>
                     </form>

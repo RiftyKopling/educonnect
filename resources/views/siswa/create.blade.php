@@ -22,7 +22,7 @@
                 Kembali
             </a>
             <h2 class="text-3xl font-black text-[#03045E] tracking-tight">Tambah Siswa Baru</h2>
-            <p class="text-gray-500 mt-1">Registrasi data siswa baru untuk SMP Negeri 2 Mungkid.</p>
+            <p class="text-gray-500 text-sm mt-1">Registrasi data siswa baru untuk SMP Negeri 2 Mungkid.</p>
         </div>
 
         <!-- Error Handling -->

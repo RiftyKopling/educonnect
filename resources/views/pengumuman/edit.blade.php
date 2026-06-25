@@ -160,7 +160,7 @@
                             onchange="tampilkanUkuranFile(this)"
                             class="w-full rounded-2xl border-gray-200 focus:ring-[#03045E] focus:border-[#03045E] p-4 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#03045E] file:text-white hover:file:bg-blue-900 transition-all">
                         <div id="info-file" class="text-xs text-gray-500 mt-1"></div>
-                        <p class="text-xs text-gray-400 mt-1">*Kosongkan jika tidak ingin mengganti lampiran. Format yang didukung: JPG, PNG, PDF (Maks. 4MB)</p>
+                        <p class="text-xs text-gray-400 mt-1">*Kosongkan jika tidak ingin mengganti lampiran. Format yang didukung: JPG, PNG, PDF (Maksimal 4 MB)</p>
                         @error('file_lampiran') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 

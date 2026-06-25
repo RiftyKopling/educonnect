@@ -15,7 +15,7 @@
     <div class="mb-6 flex justify-between items-center">
         <div>
             <h2 class="text-3xl font-black text-[#03045E] tracking-tight">Manajemen Pengumuman</h2>
-            <p class="text-gray-500">Mengelola pengumuman yang telah terkirim secara terpusat.</p>
+            <p class="text-gray-500 text-sm mt-1">Mengelola pengumuman yang telah terkirim secara terpusat.</p>
         </div>
 
         @if(auth()->user()->role?->slug !== 'orang-tua')
@@ -204,102 +204,104 @@
     </script>
 
     <div class="bg-white rounded-[2rem] shadow-sm overflow-hidden p-6">
-        <table class="w-full border-separate border-spacing-y-3">
-            <thead>
-                <tr class="text-white text-sm uppercase tracking-widest">
-                    <th class="bg-[#03045E] p-4 rounded-l-full text-left">Judul</th>
-                    <th class="bg-[#03045E] p-4 text-left">Target</th>
-                    <th class="bg-[#03045E] p-4 text-left">
-                        <a href="{{ route('pengumuman.index', array_merge(request()->query(), [
-                            'sort' => 'created_at',
-                            'direction' => request()->input('sort') == 'created_at' && request()->input('direction') == 'asc' ? 'desc' : 'asc'
-                        ])) }}"
-                           class="flex items-center gap-1 hover:text-gray-300 transition-colors">
-                            Tanggal
-                            @if(request()->input('sort') == 'created_at' || !request()->input('sort'))
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    @if(request()->input('direction') == 'asc')
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
-                                    @else
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                    @endif
-                                </svg>
-                            @endif
-                        </a>
-                    </th>
-                    <th class="bg-[#03045E] p-4 text-left">Lampiran</th>
-                    <th class="bg-[#03045E] p-4 rounded-r-full text-center">Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="text-[#03045E] font-medium">
-                @forelse($data_pengumuman as $p)
-                <tr class="bg-gray-50 hover:bg-gray-100 transition-all">
-                    <td class="p-4 rounded-l-2xl font-bold">{{ $p->judul }}</td>
-                    <td class="p-4">
-                        <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-bold uppercase">
-                            {{ str_replace('-', ' ', $p->target_type) }}
-                        </span>
-                    </td>
-                    <td class="p-4 text-sm text-gray-600">
-                        {{ $p->created_at->format('d M Y H:i') }}
-                    </td>
-                    <td class="p-4">
-                        @if($p->file_lampiran)
-                            <a href="{{ asset('storage/' . $p->file_lampiran) }}" 
-                            target="_blank" 
-                            class="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold hover:bg-green-200 transition-all">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7l-5-5z"/>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 2v5h5M9 13l3-3m0 0l3 3m-3-3v8"/>
-                                </svg>
-                                Lihat Lampiran
+        <div class="overflow-x-auto">
+            <table class="w-full border-separate border-spacing-y-3">
+                <thead>
+                    <tr class="text-white text-sm uppercase tracking-widest">
+                        <th class="bg-[#03045E] p-4 rounded-l-full text-left">Judul</th>
+                        <th class="bg-[#03045E] p-4 text-left">Target</th>
+                        <th class="bg-[#03045E] p-4 text-left">
+                            <a href="{{ route('pengumuman.index', array_merge(request()->query(), [
+                                'sort' => 'created_at',
+                                'direction' => request()->input('sort') == 'created_at' && request()->input('direction') == 'asc' ? 'desc' : 'asc'
+                            ])) }}"
+                            class="flex items-center gap-1 hover:text-gray-300 transition-colors">
+                                Tanggal
+                                @if(request()->input('sort') == 'created_at' || !request()->input('sort'))
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        @if(request()->input('direction') == 'asc')
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+                                        @else
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                        @endif
+                                    </svg>
+                                @endif
                             </a>
-                        @else
-                            <span class="text-xs text-gray-400">-</span>
-                        @endif
-                    </td>
-                    <td class="p-4 rounded-r-2xl text-center">
-                        <div class="flex justify-center gap-2">
-                            @if(auth()->user()->role?->slug !== 'orang-tua')
-                                <a href="{{ route('pengumuman.edit', $p->id) }}" class="p-2 bg-amber-100 text-amber-600 rounded-xl hover:bg-amber-200 transition-colors">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </th>
+                        <th class="bg-[#03045E] p-4 text-left">Lampiran</th>
+                        <th class="bg-[#03045E] p-4 rounded-r-full text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="text-[#03045E] font-medium">
+                    @forelse($data_pengumuman as $p)
+                    <tr class="bg-gray-50 hover:bg-gray-100 transition-all">
+                        <td class="p-4 rounded-l-2xl font-bold">{{ $p->judul }}</td>
+                        <td class="p-4">
+                            <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-bold uppercase">
+                                {{ str_replace('-', ' ', $p->target_type) }}
+                            </span>
+                        </td>
+                        <td class="p-4 text-sm text-gray-600">
+                            {{ $p->created_at->format('d M Y H:i') }}
+                        </td>
+                        <td class="p-4">
+                            @if($p->file_lampiran)
+                                <a href="{{ asset('storage/' . $p->file_lampiran) }}" 
+                                target="_blank" 
+                                class="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold hover:bg-green-200 transition-all">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7l-5-5z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 2v5h5M9 13l3-3m0 0l3 3m-3-3v8"/>
                                     </svg>
+                                    Lihat Lampiran
                                 </a>
-                                <button
-                                    type="button"
-                                    data-url="{{ route('pengumuman.destroy', $p->id) }}"
-                                    data-nama="{{ $p->judul }}"
-                                    onclick="bukaModal(this.dataset.url, this.dataset.nama)"
-                                    class="p-2 bg-red-100 text-red-600 rounded-xl hover:bg-red-200 transition-colors">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                    </svg>
-                                </button>
                             @else
-                                <span class="text-xs text-gray-400 italic">Hanya bisa melihat</span>
+                                <span class="text-xs text-gray-400">-</span>
                             @endif
-                        </div>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="5" class="p-8 text-center text-gray-400">
-                        <div class="flex flex-col items-center gap-2">
-                            <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                            </svg>
-                            <span class="font-bold text-gray-400">Tidak ada pengumuman ditemukan</span>
-                            @if(request('search') || request('target'))
-                                <span class="text-sm text-gray-400">Coba ubah kata kunci pencarian atau filter target</span>
-                                <a href="{{ route('pengumuman.index') }}" class="mt-2 px-4 py-2 bg-gray-100 text-gray-600 rounded-full text-sm font-bold hover:bg-gray-200 transition-all">Reset Pencarian</a>
-                            @endif
-                        </div>
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
+                        </td>
+                        <td class="p-4 rounded-r-2xl text-center">
+                            <div class="flex justify-center gap-2">
+                                @if(auth()->user()->role?->slug !== 'orang-tua')
+                                    <a href="{{ route('pengumuman.edit', $p->id) }}" class="p-2 bg-amber-100 text-amber-600 rounded-xl hover:bg-amber-500 hover:text-white transition-all">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                        </svg>
+                                    </a>
+                                    <button
+                                        type="button"
+                                        data-url="{{ route('pengumuman.destroy', $p->id) }}"
+                                        data-nama="{{ $p->judul }}"
+                                        onclick="bukaModal(this.dataset.url, this.dataset.nama)"
+                                        class="p-2 bg-red-100 text-red-600 rounded-xl hover:bg-red-500 hover:text-white transition-all">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                    </button>
+                                @else
+                                    <span class="text-xs text-gray-400 italic">Hanya bisa melihat</span>
+                                @endif
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="5" class="p-8 text-center text-gray-400">
+                            <div class="flex flex-col items-center gap-2">
+                                <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                </svg>
+                                <span class="font-bold text-gray-400">Tidak ada pengumuman ditemukan</span>
+                                @if(request('search') || request('target'))
+                                    <span class="text-sm text-gray-400">Coba ubah kata kunci pencarian atau filter target</span>
+                                    <a href="{{ route('pengumuman.index') }}" class="mt-2 px-4 py-2 bg-gray-100 text-gray-600 rounded-full text-sm font-bold hover:bg-gray-200 transition-all">Reset Pencarian</a>
+                                @endif
+                            </div>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
         <div class="mt-6">
             {{ $data_pengumuman->links() }}
         </div>

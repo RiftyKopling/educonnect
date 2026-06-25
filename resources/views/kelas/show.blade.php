@@ -22,7 +22,7 @@
     <div class="mb-6 flex justify-between items-center flex-wrap gap-3">
         <div>
             <h2 class="text-3xl font-black text-[#03045E] tracking-tight">Kelas {{ $kelas->nama_kelas }}</h2>
-            <p class="text-gray-500">Detail informasi dan daftar siswa kelas {{ $kelas->nama_kelas }}</p>
+            <p class="text-gray-500 text-sm mt-1">Detail informasi dan daftar siswa kelas {{ $kelas->nama_kelas }}</p>
         </div>
 
         <a href="{{ route('kelas.edit', $kelas->id) }}" class="px-6 py-3 bg-[#03045E] text-white rounded-full font-bold shadow-lg hover:scale-105 transition-all flex items-center gap-2">

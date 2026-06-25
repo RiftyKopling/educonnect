@@ -15,7 +15,7 @@
     <div class="mb-6 flex justify-between items-center">
         <div>
             <h2 class="text-3xl font-black text-[#03045E] tracking-tight">Manajemen Mata Pelajaran</h2>
-            <p class="text-gray-500">Mengelola informasi dan daftar mata pelajaran kurikulum sekolah.</p>
+            <p class="text-gray-500 text-sm mt-1">Mengelola informasi dan daftar mata pelajaran kurikulum sekolah.</p>
         </div>
         <a href="{{ route('mapel.create') }}" class="px-6 py-3 bg-[#03045E] text-white rounded-full font-bold shadow-lg hover:scale-105 transition-all flex items-center gap-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -38,11 +38,26 @@
             </svg>
         </div>
 
+        {{-- Filter Tahun Ajaran --}}
+        @php
+            $tahunSekarang = (int) date('Y');
+            $tahunAktif = $tahunSekarang . '/' . ($tahunSekarang + 1);
+        @endphp
+        <select name="tahun_ajaran" class="rounded-full border-gray-200 px-5 py-3 focus:ring-[#03045E] focus:border-[#03045E] shadow-sm font-medium text-[#03045E]">
+            <option value="">Semua Tahun Ajaran</option>
+            @for($i = -1; $i <= 4; $i++)
+                @php $tahun = ($tahunSekarang + $i) . '/' . ($tahunSekarang + $i + 1); @endphp
+                <option value="{{ $tahun }}" {{ request('tahun_ajaran', $tahunAktif) == $tahun ? 'selected' : '' }}>
+                    {{ $tahun }}{{ $tahun == $tahunAktif ? ' (Aktif)' : '' }}
+                </option>
+            @endfor
+        </select>
+
         <button type="submit" class="px-6 py-3 bg-[#03045E] text-white rounded-full font-bold shadow-lg hover:scale-105 transition-all">
             Cari
         </button>
 
-        @if(request('search'))
+        @if(request('search') || request('tahun_ajaran'))
             <a href="{{ route('mapel.index') }}" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-full font-bold shadow-sm hover:scale-105 transition-all">
                 Reset
             </a>
@@ -84,78 +99,86 @@
     @endif
 
     <div class="bg-white rounded-[2rem] shadow-sm overflow-hidden p-6 border border-gray-100">
-        <table class="w-full border-separate border-spacing-y-3">
-            <thead>
-                <tr class="text-white text-sm uppercase tracking-widest">
-                    <th class="bg-[#03045E] p-4 rounded-l-full text-left">Kode Mapel</th>
-                    <th class="bg-[#03045E] p-4 text-left">Nama Mata Pelajaran</th>
-                    <th class="bg-[#03045E] p-4 text-left">Guru Pengampu</th>
-                    <th class="bg-[#03045E] p-4 rounded-r-full text-center">Aksi</th>
-                </tr>
-            </thead>
-            <tbody class="text-[#03045E] font-medium">
-                @forelse($data_mapel as $mapel)
-                <tr class="bg-gray-50 hover:bg-gray-100 transition-all">
-                    <td class="p-4 rounded-l-2xl">
-                        <span class="px-3 py-1 bg-[#03045E]/10 rounded-xl text-sm font-bold">{{ $mapel->kode_mapel }}</span>
-                    </td>
-                    <td class="p-4 font-bold">{{ $mapel->nama_mapel }}</td>
-                    <td class="p-4">
-                        <div class="flex flex-wrap gap-1">
-                            @foreach($mapel->gurus as $guru)
-                                <span class="px-3 py-1 bg-[#03045E] text-white rounded-full text-xs font-bold">{{ $guru->name }}</span>
-                            @endforeach
-                            @if($mapel->gurus->isEmpty())
-                                <span class="text-gray-400 italic text-sm font-normal">Belum ada guru</span>
-                            @endif
-                        </div>
-                    </td>
-                    <td class="p-4 rounded-r-2xl text-center">
-                        <div class="flex justify-center gap-2">
-                            <a href="{{ route('mapel.assign', $mapel->id) }}" 
-                               title="Assign Guru" 
-                               class="p-2 bg-indigo-100 text-indigo-600 rounded-xl hover:bg-indigo-500 hover:text-white transition-all">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+        <div class="overflow-x-auto">
+            <table class="w-full border-separate border-spacing-y-3">
+                <thead>
+                    <tr class="text-white text-sm uppercase tracking-widest">
+                        <th class="bg-[#03045E] p-4 rounded-l-full text-left">Kode Mapel</th>
+                        <th class="bg-[#03045E] p-4 text-left">Nama Mata Pelajaran</th>
+                        <th class="bg-[#03045E] p-4 text-left">Tahun Ajaran</th>
+                        <th class="bg-[#03045E] p-4 text-left">Guru Pengampu</th>
+                        <th class="bg-[#03045E] p-4 rounded-r-full text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="text-[#03045E] font-medium">
+                    @forelse($data_mapel as $mapel)
+                    <tr class="bg-gray-50 hover:bg-gray-100 transition-all">
+                        <td class="p-4 rounded-l-2xl">
+                            <span class="px-3 py-1 bg-[#03045E]/10 rounded-xl text-sm font-bold">{{ $mapel->kode_mapel }}</span>
+                        </td>
+                        <td class="p-4 font-bold">{{ $mapel->nama_mapel }}</td>
+                        <td class="p-4">
+                            <span class="px-3 py-1 bg-blue-50 text-blue-700 rounded-xl text-sm font-bold">
+                                {{ $mapel->tahun_ajaran }}
+                            </span>
+                        </td>
+                        <td class="p-4">
+                            <div class="flex flex-wrap gap-1">
+                                @foreach($mapel->gurus as $guru)
+                                    <span class="px-3 py-1 bg-[#03045E] text-white rounded-full text-xs font-bold">{{ $guru->name }}</span>
+                                @endforeach
+                                @if($mapel->gurus->isEmpty())
+                                    <span class="text-gray-400 italic text-sm font-normal">Belum ada guru</span>
+                                @endif
+                            </div>
+                        </td>
+                        <td class="p-4 rounded-r-2xl text-center">
+                            <div class="flex justify-center gap-2">
+                                <a href="{{ route('mapel.assign', $mapel->id) }}"
+                                title="Assign Guru"
+                                class="p-2 bg-indigo-100 text-blue-600 rounded-xl hover:bg-blue-500 hover:text-white transition-all">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                    </svg>
+                                </a>
+                                <a href="{{ route('mapel.edit', $mapel->id) }}"
+                                title="Edit Mapel"
+                                class="p-2 bg-amber-100 text-amber-600 rounded-xl hover:bg-amber-500 hover:text-white transition-all">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                </a>
+                                <button type="button"
+                                        data-url="{{ route('mapel.destroy', $mapel->id) }}"
+                                        data-nama="{{ $mapel->nama_mapel }}"
+                                        onclick="bukaModal(this.dataset.url, this.dataset.nama)"
+                                        class="p-2 bg-red-100 text-red-600 rounded-xl hover:bg-red-500 hover:text-white transition-all">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="5" class="p-8 text-center text-gray-400">
+                            <div class="flex flex-col items-center gap-2">
+                                <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                                 </svg>
-                            </a>
-                            <a href="{{ route('mapel.edit', $mapel->id) }}" 
-                               title="Edit Mapel" 
-                               class="p-2 bg-amber-100 text-amber-600 rounded-xl hover:bg-amber-500 hover:text-white transition-all">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                </svg>
-                            </a>
-                            <button type="button"
-                                    data-url="{{ route('mapel.destroy', $mapel->id) }}"
-                                    data-nama="{{ $mapel->nama_mapel }}"
-                                    onclick="bukaModal(this.dataset.url, this.dataset.nama)"
-                                    class="p-2 bg-red-100 text-red-600 rounded-xl hover:bg-red-500 hover:text-white transition-all">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="4" class="p-8 text-center text-gray-400">
-                        <div class="flex flex-col items-center gap-2">
-                            <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                            </svg>
-                            <span class="font-bold text-gray-400">Belum ada data mata pelajaran</span>
-                            @if(request('search'))
-                                <span class="text-sm text-gray-400">Coba ubah kata kunci pencarian</span>
-                                <a href="{{ route('mapel.index') }}" class="mt-2 px-4 py-2 bg-gray-100 text-gray-600 rounded-full text-sm font-bold hover:bg-gray-200 transition-all">Reset Pencarian</a>
-                            @endif
-                        </div>
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
+                                <span class="font-bold text-gray-400">Belum ada data mata pelajaran</span>
+                                @if(request('search') || request('tahun_ajaran'))
+                                    <span class="text-sm text-gray-400">Coba ubah filter pencarian</span>
+                                    <a href="{{ route('mapel.index') }}" class="mt-2 px-4 py-2 bg-gray-100 text-gray-600 rounded-full text-sm font-bold hover:bg-gray-200 transition-all">Reset Pencarian</a>
+                                @endif
+                            </div>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
         <div class="mt-6">
             {{ $data_mapel->links() }}
         </div>
@@ -201,7 +224,6 @@
                 setTimeout(() => notif.remove(), 500);
             }
         }
-
         function tutupNotifError() {
             const notif = document.getElementById('notif-error');
             if (notif) {
@@ -210,12 +232,9 @@
                 setTimeout(() => notif.remove(), 500);
             }
         }
-
-        // Auto hilang setelah 5 detik
         setTimeout(tutupNotif, 5000);
         setTimeout(tutupNotifError, 5000);
 
-        // ===== MODAL HAPUS =====
         function bukaModal(url, nama) {
             document.getElementById('nama-mapel').textContent = nama;
             document.getElementById('form-hapus').action = url;
@@ -223,14 +242,11 @@
             modal.classList.remove('hidden');
             modal.classList.add('flex');
         }
-
         function tutupModal() {
             const modal = document.getElementById('modal-hapus');
             modal.classList.add('hidden');
             modal.classList.remove('flex');
         }
-
-        // Tutup modal kalau klik di luar
         document.getElementById('modal-hapus').addEventListener('click', function(e) {
             if (e.target === this) tutupModal();
         });

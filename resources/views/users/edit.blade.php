@@ -15,6 +15,7 @@
                 Kembali
             </a>
             <h2 class="text-3xl font-black text-[#03045E] tracking-tight">Edit Pengguna: {{ $user->name }}</h2>
+            <p class="text-gray-500  text-sm mt-1">Edit data akun user EduConnect.</p>
         </div>
 
         <div class="bg-white rounded-[2rem] shadow-sm p-8 border border-gray-100">
@@ -134,10 +135,7 @@
                             </div>
                         </div>
                     </div>
-
-                    <button type="submit" class="w-full py-4 bg-amber-500 text-white rounded-2xl font-bold shadow-lg hover:bg-amber-600 transition-all uppercase tracking-widest">
-                        Perbarui Data Pengguna
-                    </button>
+                    <button type="submit" class="w-full py-4 bg-[#03045E] text-white rounded-2xl font-bold shadow-lg hover:bg-blue-900 transition-all uppercase tracking-widest">Perbarui Data Pengguna</button>
                 </div>
             </form>
         </div>

@@ -15,7 +15,7 @@
     <div class="mb-6 flex justify-between items-center">
         <div>
             <h2 class="text-3xl font-black text-[#03045E] tracking-tight">Papan Pengumuman</h2>
-            <p class="text-gray-500 font-medium">Seluruh informasi dan pengumuman masuk untuk Anda.</p>
+            <p class="text-gray-500 text-sm mt-1">Seluruh informasi dan pengumuman masuk untuk Anda.</p>
         </div>
     </div>
 

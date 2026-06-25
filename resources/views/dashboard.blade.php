@@ -9,7 +9,7 @@
         <div class="relative z-10 flex justify-between items-center">
             <div>
                 <h2 class="text-4xl font-extrabold mb-2">
-                    Selamat Datang, {{ explode(' ', Auth::user()->name)[0] }}
+                    Selamat Datang, {{ collect(explode(' ', Auth::user()->name))->take(2)->implode(' ')  }}
                 </h2>
                 <p class="text-white/80 font-light tracking-wide italic">
                     Pantau dan Kelola Aktivitas Sekolah dalam Satu Platform Terpadu.
@@ -49,7 +49,7 @@
             ['name' => 'Presensi Siswa', 'icon' => 'clipboard-document-check', 'route' => null],
             ['name' => 'Input Nilai', 'icon' => 'pencil-square', 'route' => null],
             ['name' => 'Materi Ajar', 'icon' => 'document-text', 'route' => null],
-            ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => 'pengumuman.index'],
+            ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => 'pengumu man.index'],
             ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => null],
             ],
 
@@ -127,7 +127,7 @@
                         <th class="bg-[#03045E] p-4 rounded-l-full text-left font-bold tracking-widest text-xs uppercase pl-6">Judul</th>
                         <th class="bg-[#03045E] p-4 text-left font-bold tracking-widest text-xs uppercase">Pengirim</th>
                         <th class="bg-[#03045E] p-4 text-center font-bold tracking-widest text-xs uppercase">Target</th>
-                        <th class="bg-[#03045E] p-4 rounded-r-full text-right font-bold tracking-widest text-xs uppercase pr-6">Waktu</th>
+                        <th class="bg-[#03045E] p-4 rounded-r-full text-right font-bold tracking-widest text-xs uppercase pr-6">Waktu Dibuat</th>
                     </tr>
                 </thead>
                 <tbody class="text-[#03045E] font-medium">
@@ -141,7 +141,7 @@
                             </span>
                         </td>
                         <td class="p-4 rounded-r-2xl text-right text-sm italic text-gray-500 pr-6">
-                            {{ $pengumuman->created_at->diffForHumans() }}
+                            {{ $pengumuman->created_at->translatedFormat('l, d F Y H:i') }}
                         </td>
                     </tr>
                     @empty
