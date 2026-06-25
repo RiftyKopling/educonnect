@@ -102,7 +102,7 @@ class KonselingSeeder extends Seeder
         // - Konseling Kelompok (Terjadwal)
         if (isset($siswas[2])) {
             Konseling::create([
-                'tanggal' => Carbon::now()->addDays(1)->setHour(13)->setMinute(00),
+                'tanggal' => Carbon::now()->addDays(1)->setHour(13)->setMinute(0),
                 'siswa_nisn' => $siswas[2]->nisn,
                 'guru_bk_id' => $guruBk->id,
                 'jenis_layanan' => 'Konseling Kelompok',

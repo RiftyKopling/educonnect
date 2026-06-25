@@ -13,7 +13,7 @@
         'guru-mapel' => [
             ['name' => 'Presensi Siswa', 'icon' => 'clipboard-document-check', 'route' => 'presensi.index'],
             ['name' => 'Input Nilai', 'icon' => 'pencil-square', 'route' => 'nilai.index'],
-            ['name' => 'Materi Ajar', 'icon' => 'document-text', 'route' => null],
+            ['name' => 'Materi Ajar', 'icon' => 'document-text', 'route' => 'materi-ajar.index'],
             ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => 'pengumuman.index'],
             ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
         ],

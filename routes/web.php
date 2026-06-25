@@ -12,6 +12,7 @@ use App\Http\Controllers\NilaiController;
 use App\Http\Controllers\PelanggaranController;
 use App\Http\Controllers\CatatanPelanggaranController;
 use App\Http\Controllers\KonselingController;
+use App\Http\Controllers\MateriAjarController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -51,6 +52,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     Route::get('konseling/cetak', [KonselingController::class, 'cetak'])->name('konseling.cetak');
     Route::resource('konseling', KonselingController::class);
+
+    // Manajemen Materi Ajar
+    Route::resource('materi-ajar', MateriAjarController::class);
 
     // Endpoint AJAX untuk Cascading Dropdown Kelas -> Siswa
     Route::get('api/kelas/{kelasId}/siswa', [CatatanPelanggaranController::class, 'getSiswaByKelas'])->name('api.kelas.siswa');

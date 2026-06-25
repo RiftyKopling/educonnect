@@ -91,4 +91,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Konseling::class, 'guru_bk_id');
     }
+
+    // Relasi ke Kelas (Jika user adalah Guru Mapel, banyak ke banyak)
+    public function kelasDiajar()
+    {
+        return $this->belongsToMany(Kelas::class, 'kelas_user');
+    }
 }
