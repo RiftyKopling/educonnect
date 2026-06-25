@@ -79,4 +79,16 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Mapel::class, 'mapel_user');
     }
+
+    // Relasi ke Catatan Pelanggaran (Jika user adalah Guru BK)
+    public function catatanPelanggaransDiinput()
+    {
+        return $this->hasMany(CatatanPelanggaran::class, 'guru_bk_id');
+    }
+
+    // Relasi ke Konseling (Jika user adalah Guru BK)
+    public function konselingsDiampu()
+    {
+        return $this->hasMany(Konseling::class, 'guru_bk_id');
+    }
 }

@@ -43,6 +43,7 @@
             ['name' => 'Manajemen Mata Pelajaran', 'icon' => 'book-open', 'route' => 'mapel.index'],
             ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => 'pengumuman.index'],
             ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
+            ['name' => 'Master Pelanggaran', 'icon' => 'exclamation-triangle', 'route' => 'pelanggaran.index'],
             ],
 
             'guru-mapel' => [
@@ -54,16 +55,17 @@
             ],
 
             'guru-bk' => [
-            ['name' => 'Catatan Konseling', 'icon' => 'chat-bubble-left-right', 'route' => null],
-            ['name' => 'Laporan Perkembangan Siswa', 'icon' => 'chart-bar', 'route' => null],
+            ['name' => 'Catatan Pelanggaran', 'icon' => 'folder-open', 'route' => 'catatan-pelanggaran.index'],
+            ['name' => 'Jadwal Konseling', 'icon' => 'chat-bubble-left-right', 'route' => 'konseling.index'],
             ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => 'pengumuman.index'],
-            ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => null],
+            ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
             ],
 
             'wali-kelas' => [
-            ['name' => 'Rekap Nilai', 'icon' => 'document-chart-bar', 'route' => null],
-            ['name' => 'Rekap Presensi', 'icon' => 'clipboard-document-list', 'route' => null],
-            ['name' => 'Catatan BK Siswa', 'icon' => 'folder-open', 'route' => null],
+            ['name' => 'Rekap Nilai', 'icon' => 'document-chart-bar', 'route' => 'nilai.index'],
+            ['name' => 'Rekap Presensi', 'icon' => 'clipboard-document-list', 'route' => 'presensi.index'],
+            ['name' => 'Catatan Pelanggaran', 'icon' => 'folder-open', 'route' => 'catatan-pelanggaran.index'],
+            ['name' => 'Jadwal Konseling', 'icon' => 'chat-bubble-left-right', 'route' => 'konseling.index'],
             ['name' => 'Profil Kelas', 'icon' => 'user-group', 'route' => null],
             ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => 'pengumuman.index'],
             ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
@@ -78,8 +80,10 @@
             ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
             ],
             'orang-tua' => [
-            ['name' => 'Nilai Anak', 'icon' => 'academic-cap', 'route' => null],
-            ['name' => 'Presensi Anak', 'icon' => 'check-badge', 'route' => null],
+            ['name' => 'Nilai Anak', 'icon' => 'academic-cap', 'route' => 'nilai.index'],
+            ['name' => 'Presensi Anak', 'icon' => 'check-badge', 'route' => 'presensi.index'],
+            ['name' => 'Catatan BK Anak', 'icon' => 'folder-open', 'route' => 'catatan-pelanggaran.index'],
+            ['name' => 'Jadwal Konseling', 'icon' => 'chat-bubble-left-right', 'route' => 'konseling.index'],
             ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
             ],
         ];

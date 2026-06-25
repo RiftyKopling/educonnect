@@ -18,15 +18,16 @@
             ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
         ],
         'guru-bk' => [
-            ['name' => 'Catatan Konseling', 'icon' => 'chat-bubble-left-right', 'route' => null],
-            ['name' => 'Laporan Perkembangan', 'icon' => 'chart-bar', 'route' => null],
+            ['name' => 'Catatan Pelanggaran', 'icon' => 'folder-open', 'route' => 'catatan-pelanggaran.index'],
+            ['name' => 'Jadwal Konseling', 'icon' => 'chat-bubble-left-right', 'route' => 'konseling.index'],
             ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => 'pengumuman.index'],
             ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
         ],
         'wali-kelas' => [
             ['name' => 'Rekap Nilai', 'icon' => 'document-chart-bar', 'route' => 'nilai.index'],
             ['name' => 'Rekap Presensi', 'icon' => 'clipboard-document-list', 'route' => 'presensi.index'],
-            ['name' => 'Catatan BK Siswa', 'icon' => 'folder-open', 'route' => null],
+            ['name' => 'Catatan Pelanggaran', 'icon' => 'folder-open', 'route' => 'catatan-pelanggaran.index'],
+            ['name' => 'Jadwal Konseling', 'icon' => 'chat-bubble-left-right', 'route' => 'konseling.index'],
             ['name' => 'Profil Kelas', 'icon' => 'user-group', 'route' => null],
             ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => 'pengumuman.index'],
             ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
@@ -40,6 +41,8 @@
         'orang-tua' => [
             ['name' => 'Nilai Anak', 'icon' => 'academic-cap', 'route' => 'nilai.index'],
             ['name' => 'Presensi Anak', 'icon' => 'check-badge', 'route' => 'presensi.index'],
+            ['name' => 'Catatan BK Anak', 'icon' => 'folder-open', 'route' => 'catatan-pelanggaran.index'],
+            ['name' => 'Jadwal Konseling', 'icon' => 'chat-bubble-left-right', 'route' => 'konseling.index'],
             ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
         ]
     ];

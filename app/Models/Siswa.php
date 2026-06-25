@@ -46,4 +46,20 @@ class Siswa extends Model
     {
         return $this->belongsTo(User::class, 'orang_tua_id');
     }
+
+    /**
+     * Relasi: Banyak Siswa memiliki banyak Catatan Pelanggaran
+     */
+    public function catatanPelanggarans()
+    {
+        return $this->hasMany(CatatanPelanggaran::class, 'siswa_nisn', 'nisn');
+    }
+
+    /**
+     * Relasi: Banyak Siswa memiliki banyak Jadwal Konseling
+     */
+    public function konselings()
+    {
+        return $this->hasMany(Konseling::class, 'siswa_nisn', 'nisn');
+    }
 }
