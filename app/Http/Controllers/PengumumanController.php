@@ -289,9 +289,19 @@ class PengumumanController extends Controller {
                 });
             });
         } 
-        // TEMPORARY untuk role lain
         else {
-            $query->where('user_id', $user->id);
+            // Role lain melihat pengumuman dengan target 'all'
+            // atau target yang sesuai role mereka
+            $query->where(function($q) use ($user, $roleSlug) {
+                // Pengumuman untuk semua orang
+                $q->where('target_type', 'all');
+                
+                // Pengumuman yang ditarget ke role spesifik mereka
+                $q->orWhere('target_type', $roleSlug);
+                
+                // Pengumuman milik sendiri (jika mereka juga bisa buat pengumuman)
+                $q->orWhere('user_id', $user->id);
+            });
         }
 
         // SEARCH

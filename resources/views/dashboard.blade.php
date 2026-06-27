@@ -30,7 +30,7 @@
             el.style.background = 'linear-gradient(to bottom right, #ff5400, #ff8500, #ff9e00)';
         ">
 
-    <div class="grid grid-cols-2 gap-6 mb-10" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+    <div class="grid grid-cols-2 gap-6 mb-10" style=" grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
         @php
         $userRoleSlug = auth()->user()->role?->slug;
 
@@ -47,11 +47,11 @@
             ],
 
             'guru-mapel' => [
-            ['name' => 'Presensi Siswa', 'icon' => 'clipboard-document-check', 'route' => null],
-            ['name' => 'Input Nilai', 'icon' => 'pencil-square', 'route' => null],
+            ['name' => 'Manajemen Presensi Siswa', 'icon' => 'clipboard-document-check', 'route' => 'presensi.index'],
+            ['name' => 'Input Nilai Akademik', 'icon' => 'pencil-square', 'route' => 'nilai.index'],
             ['name' => 'Materi Ajar', 'icon' => 'document-text', 'route' => 'materi-ajar.index'],
             ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => 'pengumuman.index'],
-            ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => null],
+            ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
             ],
 
             'guru-bk' => [
@@ -74,7 +74,6 @@
             'kepala-sekolah' => [
             ['name' => 'Laporan Akademik', 'icon' => 'chart-bar', 'route' => null],
             ['name' => 'Monitoring Sistem', 'icon' => 'shield-check', 'route' => null], 
-            ['name' => 'Pesan & Pengumuman', 'icon' => 'bell', 'route' => null],
             ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => 'pengumuman.index'],
             ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
             ],

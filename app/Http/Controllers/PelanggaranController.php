@@ -11,13 +11,18 @@ class PelanggaranController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         if (!Auth::user()->hasRole('admin-sekolah')) {
             abort(403, 'Akses ditolak.');
         }
 
-        $pelanggarans = Pelanggaran::all();
+        $pelanggarans = Pelanggaran::query()
+            ->when($request->search, fn($q) => $q->where('nama_pelanggaran', 'like', '%' . $request->search . '%'))
+            ->when($request->kategori, fn($q) => $q->where('kategori', $request->kategori))
+            ->paginate(10)
+            ->withQueryString();
+
         return view('pelanggaran.index', compact('pelanggarans'));
     }
 

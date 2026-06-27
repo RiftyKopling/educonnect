@@ -9,10 +9,11 @@
             ['name' => 'Manajemen Mata Pelajaran', 'icon' => 'book-open', 'route' => 'mapel.index'],
             ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => 'pengumuman.index'],
             ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
+            ['name' => 'Master Pelanggaran', 'icon' => 'exclamation-triangle', 'route' => 'pelanggaran.index'],
         ],
         'guru-mapel' => [
-            ['name' => 'Presensi Siswa', 'icon' => 'clipboard-document-check', 'route' => 'presensi.index'],
-            ['name' => 'Input Nilai', 'icon' => 'pencil-square', 'route' => 'nilai.index'],
+            ['name' => 'Manajemen Presensi Siswa', 'icon' => 'clipboard-document-check', 'route' => 'presensi.index'],
+            ['name' => 'Input Nilai Akademik', 'icon' => 'pencil-square', 'route' => 'nilai.index'],
             ['name' => 'Materi Ajar', 'icon' => 'document-text', 'route' => 'materi-ajar.index'],
             ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => 'pengumuman.index'],
             ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],

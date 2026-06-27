@@ -40,9 +40,42 @@ class NilaiController extends Controller
             $query->whereIn('siswa_nisn', $anakIds);
         }
 
-        $nilais = $query->paginate(20);
+        if($request->filled('search')){
+            $search = $request->search;
+            $query->where(function($q) use($search){
+                $q->whereHas('siswa',function($s) use($search){
+                    $s->where('nama_lengkap','like',"%{$search}%")
+                    ->orWhere('nisn','like',"%{$search}%");
+                });
 
-        return view('nilai.index', compact('nilais'));
+                $q->orWhereHas('mapel',function($m) use($search){
+                    $m->where('nama_mapel','like',"%{$search}%");
+                });
+            });
+        }
+
+        if($request->filled('tahun_ajaran')){
+            $query->where('tahun_ajaran',$request->tahun_ajaran);
+        }
+
+        if($request->filled('kelas_id')){
+            $query->where('kelas_id',$request->kelas_id);
+        }
+
+        $kelasList = Kelas::orderBy('nama_kelas')->get();
+
+        $tahunAjaran = Nilai::select('tahun_ajaran')
+            ->distinct()
+            ->orderByDesc('tahun_ajaran')
+            ->pluck('tahun_ajaran');
+
+        $nilais = $query->paginate(20)->withQueryString();
+
+        return view('nilai.index', compact(
+            'nilais',
+            'kelasList',
+            'tahunAjaran'
+        ));
     }
 
     /**
@@ -66,19 +99,20 @@ class NilaiController extends Controller
         $selectedSemester = $request->get('semester', 'Ganjil');
         $selectedTahun = $request->get('tahun_ajaran', date('Y') . '/' . (date('Y') + 1));
 
-        if ($request->has('mapel_id') && $request->has('kelas_id')) {
+        if ($request->filled('mapel_id') && $request->filled('kelas_id')) {
+
             $selectedMapel = Mapel::findOrFail($request->mapel_id);
             $selectedKelas = Kelas::findOrFail($request->kelas_id);
-            
-            // Validasi keamanan: Pastikan guru mengajar mapel tersebut
+
+            // Pastikan guru memang mengajar mapel tersebut
             if (!$mapels->contains('id', $selectedMapel->id)) {
                 abort(403, 'Akses Ditolak: Anda tidak ditugaskan untuk mengajar Mata Pelajaran ini.');
             }
 
-            // Daftar siswa
+            // Ambil daftar siswa
             $siswaList = Siswa::where('kelas_id', $selectedKelas->id)->get();
-            
-            // Data nilai yang mungkin sudah diinput sebelumnya
+
+            // Nilai yang sudah pernah diinput
             $existingNilai = Nilai::where('semester', $selectedSemester)
                 ->where('tahun_ajaran', $selectedTahun)
                 ->where('mapel_id', $selectedMapel->id)
@@ -86,14 +120,24 @@ class NilaiController extends Controller
                 ->get()
                 ->keyBy('siswa_nisn');
 
-            // Attach data existing
             foreach ($siswaList as $siswa) {
-                $siswa->current_tugas = isset($existingNilai[$siswa->nisn]) ? $existingNilai[$siswa->nisn]->tugas : 0;
-                $siswa->current_kuis = isset($existingNilai[$siswa->nisn]) ? $existingNilai[$siswa->nisn]->kuis : 0;
-                $siswa->current_uts = isset($existingNilai[$siswa->nisn]) ? $existingNilai[$siswa->nisn]->uts : 0;
-                $siswa->current_uas = isset($existingNilai[$siswa->nisn]) ? $existingNilai[$siswa->nisn]->uas : 0;
-                $siswa->current_catatan = isset($existingNilai[$siswa->nisn]) ? $existingNilai[$siswa->nisn]->catatan : '';
+                $siswa->current_tugas = $existingNilai[$siswa->nisn]->tugas ?? 0;
+                $siswa->current_kuis = $existingNilai[$siswa->nisn]->kuis ?? 0;
+                $siswa->current_uts = $existingNilai[$siswa->nisn]->uts ?? 0;
+                $siswa->current_uas = $existingNilai[$siswa->nisn]->uas ?? 0;
+                $siswa->current_catatan = $existingNilai[$siswa->nisn]->catatan ?? '';
             }
+
+        } elseif (
+            $request->filled('tahun_ajaran') ||
+            $request->filled('semester')
+        ) {
+
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'mapel_id' => 'Silakan pilih Mata Pelajaran dan Kelas terlebih dahulu.'
+                ]);
         }
 
         return view('nilai.create', compact(
@@ -112,12 +156,44 @@ class NilaiController extends Controller
             abort(403, 'Akses Ditolak.');
         }
 
-        $request->validate([
+        $request->validate(
+        [
             'semester' => 'required|in:Ganjil,Genap',
             'tahun_ajaran' => 'required|string',
             'mapel_id' => 'required|exists:mata_pelajaran,id',
             'kelas_id' => 'required|exists:kelas,id',
+
             'nilai' => 'required|array',
+
+            'nilai.*.tugas' => 'nullable|integer|min:0|max:100',
+            'nilai.*.kuis' => 'nullable|integer|min:0|max:100',
+            'nilai.*.uts' => 'nullable|integer|min:0|max:100',
+            'nilai.*.uas' => 'nullable|integer|min:0|max:100',
+            'nilai.*.catatan' => 'nullable|string|max:255',
+        ],
+            [
+            'semester.required' => 'Semester wajib dipilih.',
+            'semester.in' => 'Semester harus Ganjil atau Genap.',
+            'tahun_ajaran.required' => 'Tahun ajaran wajib diisi.',
+            'mapel_id.required' => 'Mata pelajaran wajib dipilih.',
+            'mapel_id.exists' => 'Mata pelajaran yang dipilih tidak valid.',
+            'kelas_id.required' => 'Kelas wajib dipilih.',
+            'kelas_id.exists' => 'Kelas yang dipilih tidak valid.',
+            'nilai.required' => 'Data nilai wajib diisi.',
+            'nilai.array' => 'Format data nilai tidak valid.',
+            'nilai.*.tugas.integer' => 'Nilai tugas harus berupa angka.',
+            'nilai.*.tugas.min' => 'Nilai tugas tidak boleh kurang dari 0.',
+            'nilai.*.tugas.max' => 'Nilai tugas tidak boleh lebih dari 100.',
+            'nilai.*.kuis.integer' => 'Nilai kuis harus berupa angka.',
+            'nilai.*.kuis.min' => 'Nilai kuis tidak boleh kurang dari 0.',
+            'nilai.*.kuis.max' => 'Nilai kuis tidak boleh lebih dari 100.',
+            'nilai.*.uts.integer' => 'Nilai UTS harus berupa angka.',
+            'nilai.*.uts.min' => 'Nilai UTS tidak boleh kurang dari 0.',
+            'nilai.*.uts.max' => 'Nilai UTS tidak boleh lebih dari 100.',
+            'nilai.*.uas.integer' => 'Nilai UAS harus berupa angka.',
+            'nilai.*.uas.min' => 'Nilai UAS tidak boleh kurang dari 0.',
+            'nilai.*.uas.max' => 'Nilai UAS tidak boleh lebih dari 100.',
+            'nilai.*.catatan.max' => 'Catatan tidak boleh lebih dari 255 karakter.',
         ]);
 
         $semester = $request->semester;
@@ -200,6 +276,25 @@ class NilaiController extends Controller
             'uts' => 'required|integer|min:0|max:100',
             'uas' => 'required|integer|min:0|max:100',
             'catatan' => 'nullable|string|max:255',
+        ],
+        [
+            'tugas.required' => 'Nilai tugas wajib diisi.',
+            'tugas.integer' => 'Nilai tugas harus berupa angka.',
+            'tugas.min' => 'Nilai tugas tidak boleh kurang dari 0.',
+            'tugas.max' => 'Nilai tugas tidak boleh lebih dari 100.',
+            'kuis.required' => 'Nilai kuis wajib diisi.',
+            'kuis.integer' => 'Nilai kuis harus berupa angka.',
+            'kuis.min' => 'Nilai kuis tidak boleh kurang dari 0.',
+            'kuis.max' => 'Nilai kuis tidak boleh lebih dari 100.',
+            'uts.required' => 'Nilai UTS wajib diisi.',
+            'uts.integer' => 'Nilai UTS harus berupa angka.',
+            'uts.min' => 'Nilai UTS tidak boleh kurang dari 0.',
+            'uts.max' => 'Nilai UTS tidak boleh lebih dari 100.',
+            'uas.required' => 'Nilai UAS wajib diisi.',
+            'uas.integer' => 'Nilai UAS harus berupa angka.',
+            'uas.min' => 'Nilai UAS tidak boleh kurang dari 0.',
+            'uas.max' => 'Nilai UAS tidak boleh lebih dari 100.',
+            'catatan.max' => 'Catatan tidak boleh lebih dari 255 karakter.',
         ]);
 
         $nilai->update([

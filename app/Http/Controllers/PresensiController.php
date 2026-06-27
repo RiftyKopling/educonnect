@@ -44,9 +44,36 @@ class PresensiController extends Controller
             $query->whereIn('siswa_nisn', $anakIds);
         }
 
-        $presensis = $query->paginate(20);
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
 
-        return view('presensi.index', compact('presensis'));
+                $q->whereHas('siswa', function ($siswa) use ($request) {
+                    $siswa->where('nama_lengkap', 'like', '%' . $request->search . '%')
+                        ->orWhere('nisn', 'like', '%' . $request->search . '%');
+                })
+
+                ->orWhereHas('mapel', function ($mapel) use ($request) {
+                    $mapel->where('nama_mapel', 'like', '%' . $request->search . '%');
+                });
+            });
+        }
+
+        if ($request->filled('tanggal')) {
+            $query->whereDate('tanggal', $request->tanggal);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('kelas_id')) {
+            $query->where('kelas_id', $request->kelas_id);
+        }
+
+        $presensis = $query->paginate(20)->withQueryString();
+        $kelasList = Kelas::orderBy('nama_kelas')->get();
+
+        return view('presensi.index', compact('presensis', 'kelasList'));
     }
 
     /**
@@ -65,21 +92,36 @@ class PresensiController extends Controller
         $mapels = $user->mapels;
         $kelasList = Kelas::all();
 
+        if ($request->hasAny(['tanggal', 'mapel_id', 'kelas_id'])) {
+            $request->validate([
+                'tanggal' => 'required|date',
+                'mapel_id' => 'required|exists:mata_pelajaran,id',
+                'kelas_id' => 'required|exists:kelas,id',
+            ], [
+                'tanggal.required' => 'Kolom Tanggal wajib diisi.',
+                'mapel_id.required' => 'Kolom Mata Pelajaran wajib diisi.',
+                'kelas_id.required' => 'Kolom Kelas wajib diisi.',
+            ]);
+        }
+
         // Variabel untuk menampilkan form bulk input jika mapel & kelas sudah dipilih
         $siswaList = [];
         $selectedMapel = null;
         $selectedKelas = null;
         $selectedTanggal = $request->get('tanggal', date('Y-m-d'));
 
-        if ($request->has('mapel_id') && $request->has('kelas_id')) {
+        if ($request->filled('tanggal') &&
+        $request->filled('mapel_id') &&
+        $request->filled('kelas_id')) {
             $selectedMapel = Mapel::findOrFail($request->mapel_id);
             $selectedKelas = Kelas::findOrFail($request->kelas_id);
             
             // Validasi tambahan (Keamanan): Pastikan guru ini benar mengajar mapel tersebut
             if (!$mapels->contains('id', $selectedMapel->id)) {
-                abort(403, 'Akses Ditolak: Anda tidak ditugaskan untuk mengajar Mata Pelajaran ini.');
+                return back()
+                    ->withInput()
+                    ->with('error', 'Anda tidak ditugaskan mengajar mata pelajaran tersebut.');
             }
-
             // Mengambil daftar siswa berdasarkan kelas
             $siswaList = Siswa::where('kelas_id', $selectedKelas->id)->get();
             
@@ -110,7 +152,7 @@ class PresensiController extends Controller
         $user = Auth::user();
 
         if (!$user->hasRole('guru-mapel')) {
-            abort(403, 'Akses Ditolak.');
+            abort(403, 'Akses Ditolak. Hanya Guru Mata Pelajaran yang dapat mengakses fitur ini.');
         }
 
         $request->validate([
@@ -126,7 +168,10 @@ class PresensiController extends Controller
 
         // Pastikan guru mengajar mapel ini
         if (!$user->mapels->contains('id', $mapel_id)) {
-            abort(403, 'Anda tidak diizinkan.');
+            return redirect()
+                ->route('presensi.create')
+                ->withInput()
+                ->with('error', 'Anda tidak ditugaskan mengajar mata pelajaran tersebut.');
         }
 
         foreach ($request->presensi as $nisn => $data) {
@@ -152,7 +197,7 @@ class PresensiController extends Controller
     /**
      * Tampilkan form edit individual
      */
-    public function edit($id)
+    public function edit(int $id)
     {
         $presensi = Presensi::findOrFail($id);
         $user = Auth::user();
@@ -184,12 +229,12 @@ class PresensiController extends Controller
 
         // Pengecekan ulang RBAC
         if ($user->hasRole('guru-mapel')) {
-            if ($presensi->guru_id !== $user->id) abort(403);
+            if ($presensi->guru_id !== $user->id) abort(403, 'Akses ditolak. Anda hanya dapat mengakses data presensi yang Anda buat sendiri.');
         } elseif ($user->hasRole('wali-kelas')) {
             $kelasDiampu = $user->kelasDiampu;
-            if (!$kelasDiampu || $presensi->kelas_id !== $kelasDiampu->id) abort(403);
+            if (!$kelasDiampu || $presensi->kelas_id !== $kelasDiampu->id) abort(403, 'Akses ditolak. Anda hanya dapat mengakses data presensi pada kelas yang Anda ampu.');
         } else {
-            abort(403);
+           abort(403, 'Akses ditolak. Anda tidak memiliki izin untuk melihat halaman presensi.');
         }
 
         $request->validate([
