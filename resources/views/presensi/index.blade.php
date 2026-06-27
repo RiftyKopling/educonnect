@@ -45,73 +45,8 @@
         </div>
     </div>
 
-    <!-- Search & Filter -->
-    <form method="GET" action="{{ route('presensi.index') }}" class="flex gap-3 mb-6 flex-wrap">
-        <div class="flex-1 relative min-w-[200px]">
-            <input type="text"
-                name="search"
-                value="{{ request('search') }}"
-                placeholder="Cari nama siswa, NISN, atau mata pelajaran..."
-                class="w-full rounded-full border-gray-200 pl-12 pr-4 py-3 focus:ring-[#03045E] focus:border-[#03045E] shadow-sm">
-            <svg class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-            </svg>
-        </div>
 
-        {{-- Filter Tanggal --}}
-        <input type="text" 
-            name="tanggal" 
-            id="tanggal"
-            value="{{ request('tanggal') }}"
-            class="rounded-full border-gray-200 px-6 py-3 focus:ring-[#03045E] focus:border-[#03045E] shadow-sm"
-            placeholder="Pilih tanggal">
 
-            <script>
-                flatpickr("#tanggal", {
-                    dateFormat: "Y-m-d",
-                    locale: "id",
-                    maxDate: null,
-                    allowInput: true,
-                    disableMobile: true, // Matikan kalender mobile default
-                    altInput: true,
-                    altFormat: "j F Y",
-            });
-            </script>                           
-            @error('tanggal') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-
-        {{-- Filter Status --}}
-        <select name="status" class="rounded-full border-gray-200 px-6 py-3 focus:ring-[#03045E] focus:border-[#03045E] shadow-sm">
-            <option value="">Semua Status</option>
-            <option value="H" {{ request('status') == 'H' ? 'selected' : '' }}>Hadir</option>
-            <option value="S" {{ request('status') == 'S' ? 'selected' : '' }}>Sakit</option>
-            <option value="I" {{ request('status') == 'I' ? 'selected' : '' }}>Izin</option>
-            <option value="A" {{ request('status') == 'A' ? 'selected' : '' }}>Alpa</option>
-            <option value="D" {{ request('status') == 'D' ? 'selected' : '' }}>Dispensasi</option>
-        </select>
-
-        <select name="kelas_id"
-            class="rounded-full border-gray-200 px-6 py-3 focus:ring-[#03045E] focus:border-[#03045E] shadow-sm">
-
-            <option value="">Semua Kelas</option>
-
-            @foreach($kelasList as $kelas)
-                <option value="{{ $kelas->id }}"
-                    {{ request('kelas_id') == $kelas->id ? 'selected' : '' }}>
-                    {{ $kelas->nama_kelas }}
-                </option>
-            @endforeach
-        </select>
-
-        <button type="submit" class="px-6 py-3 bg-[#03045E] text-white rounded-full font-bold shadow-lg hover:scale-105 transition-all">
-            Cari
-        </button>
-
-        @if(request('search') || request('status') || request('kelas_id') || request('tanggal'))
-            <a href="{{ route('presensi.index') }}" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-full font-bold shadow-sm hover:scale-105 transition-all">
-                Reset
-            </a>
-        @endif
-    </form>
 
     <!-- Notifikasi Success -->
     @if(session('success'))
