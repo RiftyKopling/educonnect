@@ -1,4 +1,8 @@
 <x-app-layout>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
+
     <!-- Breadcrumb -->
     <div class="flex items-center gap-2 text-sm text-gray-500 mb-4">
         <a href="{{ route('dashboard') }}" class="hover:text-[#03045E] font-medium flex items-center gap-1">
@@ -21,30 +25,107 @@
                 <p class="text-gray-500 text-sm mt-1">Kelola dan monitor riwayat presensi siswa.</p>
             @endif
         </div>
-        <div class="flex gap-3">
+        <div class="flex gap-3 flex-wrap">
             @if(auth()->user()->hasRole('guru-mapel'))
                 <a href="{{ route('presensi.create') }}" class="px-6 py-3 bg-[#03045E] text-white rounded-full font-bold shadow-lg hover:scale-105 transition-all flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
                     INPUT PRESENSI
                 </a>
             @endif
             @if(auth()->user()->hasRole('orang-tua') || auth()->user()->hasRole('wali-kelas'))
                 <a href="{{ route('presensi.cetak') }}" target="_blank" class="px-6 py-3 bg-emerald-500 text-white rounded-full font-bold shadow-lg hover:scale-105 transition-all flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                    </svg>
                     CETAK LAPORAN
                 </a>
             @endif
         </div>
     </div>
 
+    <!-- Search & Filter -->
+    <form method="GET" action="{{ route('presensi.index') }}" class="flex gap-3 mb-6 flex-wrap">
+        <div class="flex-1 relative min-w-[200px]">
+            <input type="text"
+                name="search"
+                value="{{ request('search') }}"
+                placeholder="Cari nama siswa, NISN, atau mata pelajaran..."
+                class="w-full rounded-full border-gray-200 pl-12 pr-4 py-3 focus:ring-[#03045E] focus:border-[#03045E] shadow-sm">
+            <svg class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+        </div>
+
+        {{-- Filter Tanggal --}}
+        <input type="text" 
+            name="tanggal" 
+            id="tanggal"
+            value="{{ request('tanggal') }}"
+            class="rounded-full border-gray-200 px-6 py-3 focus:ring-[#03045E] focus:border-[#03045E] shadow-sm"
+            placeholder="Pilih tanggal">
+
+            <script>
+                flatpickr("#tanggal", {
+                    dateFormat: "Y-m-d",
+                    locale: "id",
+                    maxDate: null,
+                    allowInput: true,
+                    disableMobile: true, // Matikan kalender mobile default
+                    altInput: true,
+                    altFormat: "j F Y",
+            });
+            </script>                           
+            @error('tanggal') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+
+        {{-- Filter Status --}}
+        <select name="status" class="rounded-full border-gray-200 px-6 py-3 focus:ring-[#03045E] focus:border-[#03045E] shadow-sm">
+            <option value="">Semua Status</option>
+            <option value="H" {{ request('status') == 'H' ? 'selected' : '' }}>Hadir</option>
+            <option value="S" {{ request('status') == 'S' ? 'selected' : '' }}>Sakit</option>
+            <option value="I" {{ request('status') == 'I' ? 'selected' : '' }}>Izin</option>
+            <option value="A" {{ request('status') == 'A' ? 'selected' : '' }}>Alpa</option>
+            <option value="D" {{ request('status') == 'D' ? 'selected' : '' }}>Dispensasi</option>
+        </select>
+
+        <select name="kelas_id"
+            class="rounded-full border-gray-200 px-6 py-3 focus:ring-[#03045E] focus:border-[#03045E] shadow-sm">
+
+            <option value="">Semua Kelas</option>
+
+            @foreach($kelasList as $kelas)
+                <option value="{{ $kelas->id }}"
+                    {{ request('kelas_id') == $kelas->id ? 'selected' : '' }}>
+                    {{ $kelas->nama_kelas }}
+                </option>
+            @endforeach
+        </select>
+
+        <button type="submit" class="px-6 py-3 bg-[#03045E] text-white rounded-full font-bold shadow-lg hover:scale-105 transition-all">
+            Cari
+        </button>
+
+        @if(request('search') || request('status') || request('kelas_id') || request('tanggal'))
+            <a href="{{ route('presensi.index') }}" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-full font-bold shadow-sm hover:scale-105 transition-all">
+                Reset
+            </a>
+        @endif
+    </form>
+
+    <!-- Notifikasi Success -->
     @if(session('success'))
         <div id="notif-sukses" class="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-2xl flex items-center justify-between">
             <div class="flex items-center gap-2">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
                 <span class="font-medium">{{ session('success') }}</span>
             </div>
             <button onclick="tutupNotif()" class="text-green-700 hover:text-green-900 ml-4">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
             </button>
         </div>
     @endif
@@ -288,6 +369,37 @@
         </div>
     </div>
 
+    <!-- Modal Konfirmasi Hapus -->
+    <div id="modal-hapus" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50">
+        <div class="bg-white rounded-2xl shadow-xl p-8 max-w-sm w-full mx-4">
+            <div class="flex flex-col items-center text-center gap-4">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                    <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-black text-[#03045E]">Hapus Data Presensi?</h3>
+                    <p class="text-gray-500 text-sm mt-1">
+                        Data presensi "<span id="nama-presensi" class="font-bold text-[#03045E]"></span>"
+                        akan dihapus permanen dan tidak bisa dikembalikan.
+                    </p>
+                </div>
+                <div class="flex gap-3 w-full mt-2">
+                    <button onclick="tutupModal()" class="flex-1 py-3 bg-[#03045E] text-white rounded-xl font-bold hover:bg-[#05086b] transition-all">
+                        Batal
+                    </button>
+                    <form id="form-hapus" method="POST" class="flex-1">
+                        @csrf @method('DELETE')
+                        <button type="submit" class="w-full py-3 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition-all">
+                            Hapus
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         function tutupNotif() {
             const notif = document.getElementById('notif-sukses');
@@ -297,6 +409,31 @@
                 setTimeout(() => notif.remove(), 500);
             }
         }
+        function tutupNotifError() {
+            const notif = document.getElementById('notif-error');
+            if (notif) {
+                notif.style.transition = 'opacity 0.5s';
+                notif.style.opacity = '0';
+                setTimeout(() => notif.remove(), 500);
+            }
+        }
         setTimeout(tutupNotif, 5000);
+        setTimeout(tutupNotifError, 5000);
+
+        function bukaModal(url, nama) {
+            document.getElementById('nama-presensi').textContent = nama;
+            document.getElementById('form-hapus').action = url;
+            const modal = document.getElementById('modal-hapus');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+        function tutupModal() {
+            const modal = document.getElementById('modal-hapus');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+        document.getElementById('modal-hapus').addEventListener('click', function(e) {
+            if (e.target === this) tutupModal();
+        });
     </script>
 </x-app-layout>

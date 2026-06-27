@@ -35,28 +35,27 @@ class DashboardController extends Controller
 
         // 2. Filter Logika Pengumuman Berdasarkan Role
         if ($roleSlug == 'orang-tua') {
-            // Ambil data siswa milik orang tua ini
             $siswa = Siswa::where('orang_tua_id', $user->id)->first();
-            
-            // Gunakan operator ?-> agar jika data siswa tidak ditemukan, tidak memicu crash id
             $kelas_id = $siswa?->kelas_id;
 
             $query->where(function($q) use ($kelas_id) {
                 $q->whereIn('target_type', ['all', 'all-parents'])
-                  ->orWhere(function($subQ) use ($kelas_id) {
-                      if ($kelas_id) {
-                          $subQ->where('target_type', 'class-parents')
-                               ->where('kelas_id', $kelas_id);
-                      } else {
-                          $subQ->where('id', 0); 
-                      }
-                  });
+                ->orWhere(function($subQ) use ($kelas_id) {
+                    if ($kelas_id) {
+                        $subQ->where('target_type', 'class-parents')
+                            ->where('kelas_id', $kelas_id);
+                    } else {
+                        $subQ->where('id', 0);
+                    }
+                });
             });
 
-        } elseif ($roleSlug == 'kepala-sekolah') {
-            $query->whereIn('target_type', ['all', 'kepala-sekolah']);
         } else {
-            $query->where('target_type', 'all');
+            // Semua role lain: tampilkan pengumuman target 'all' ATAU target role mereka
+            $query->where(function($q) use ($roleSlug) {
+                $q->where('target_type', 'all')
+                ->orWhere('target_type', $roleSlug);
+            });
         }
 
         // Batasi hanya mengambil 5 pengumuman teratas
