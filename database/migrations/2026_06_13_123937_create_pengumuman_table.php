@@ -13,6 +13,7 @@ return new class extends Migration {
             $table->text('konten');
             $table->string('target_type'); // all, all-parents, class-parents, kepala-sekolah
             $table->foreignId('kelas_id')->nullable()->constrained('kelas')->onDelete('set null');
+            $table->string('file_lampiran')->nullable();
             $table->timestamps();
         });
     }

@@ -15,6 +15,7 @@
                 Kembali
             </a>
             <h2 class="text-3xl font-black text-[#03045E] tracking-tight">Tambah Pengguna Baru</h2>
+            <p class="text-gray-500  text-sm mt-1">Registrasi akun user baru EduConnect.</p>
         </div>
 
         <div class="bg-white rounded-[2rem] shadow-sm p-8 border border-gray-100">

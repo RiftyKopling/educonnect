@@ -18,7 +18,7 @@
                 Kembali
             </a>
             <h2 class="text-3xl font-black text-[#03045E] tracking-tight">Edit Kelas: {{ $kelas->nama_kelas }}</h2>
-            <p class="text-gray-500 mt-1">Memperbarui informasi kelas yang terdaftar di sistem akademik.</p>
+            <p class="text-gray-500 text-sm mt-1">Memperbarui informasi kelas yang terdaftar di sistem akademik.</p>
         </div>
 
         <!-- Session Error -->
@@ -113,7 +113,7 @@
                     </div>
 
                     <!-- Submit Button -->
-                    <button type="submit" class="w-full py-4 bg-amber-500 text-white rounded-2xl font-bold shadow-lg hover:bg-amber-600 transition-all uppercase tracking-widest">
+                    <button type="submit" class="w-full py-4 bg-[#03045E] text-white rounded-2xl font-bold shadow-lg hover:bg-amber-600 transition-all uppercase tracking-widest">
                         Perbarui Data Kelas
                     </button>
                 </div>

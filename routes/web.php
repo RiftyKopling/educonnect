@@ -5,9 +5,14 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\KelasController;
 use App\Http\Controllers\MapelController;
-use App\Http\Controllers\PengumumanController; // <-- Diperbaiki (App, bukan APP)
-use App\Http\Controllers\DashboardController;  // <-- Wajib ditambahkan agar Dashboard jalan
+use App\Http\Controllers\PengumumanController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PresensiController;
+use App\Http\Controllers\NilaiController;
+use App\Http\Controllers\PelanggaranController;
+use App\Http\Controllers\CatatanPelanggaranController;
+use App\Http\Controllers\KonselingController;
+use App\Http\Controllers\MateriAjarController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -30,20 +35,29 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     // Rute Pengumuman diletakkan di sini agar Guru dan Kepala Sekolah bisa mengaksesnya
     Route::resource('pengumuman', PengumumanController::class);
+    
+    // Rute Presensi (diakses oleh Guru Mapel, Wali Kelas, Orang Tua)
+    Route::get('presensi/cetak', [PresensiController::class, 'cetakLaporan'])->name('presensi.cetak');
+    Route::resource('presensi', PresensiController::class);
+    
+    // Rute Nilai (diakses oleh Guru Mapel, Wali Kelas, Orang Tua)
+    Route::get('nilai/cetak', [NilaiController::class, 'cetakLaporan'])->name('nilai.cetak');
+    Route::resource('nilai', NilaiController::class);
 
-    // --- MODUL PRESENSI ---
-    // 1. Rute Laporan (Harus diletakkan di atas rute {id} agar tidak bertabrakan)
-    Route::get('/presensi/laporan', [PresensiController::class, 'cetakLaporan'])->name('presensi.report');
+    // Manajemen Konseling
+    Route::resource('pelanggaran', PelanggaranController::class)->except(['show']);
     
-    // 2. Rute Utama (CRUD)
-    Route::get('/presensi', [PresensiController::class, 'index'])->name('presensi.index');
-    Route::get('/presensi/create', [PresensiController::class, 'create'])->name('presensi.create');
-    Route::post('/presensi', [PresensiController::class, 'store'])->name('presensi.store');
+    Route::get('catatan-pelanggaran/cetak', [CatatanPelanggaranController::class, 'cetak'])->name('catatan-pelanggaran.cetak');
+    Route::resource('catatan-pelanggaran', CatatanPelanggaranController::class);
     
-    // 3. Rute Edit & Update & Delete
-    Route::get('/presensi/{id}/edit', [PresensiController::class, 'edit'])->name('presensi.edit');
-    Route::put('/presensi/{id}', [PresensiController::class, 'update'])->name('presensi.update');
-    Route::delete('/presensi/{id}', [PresensiController::class, 'destroy'])->name('presensi.destroy');
+    Route::get('konseling/cetak', [KonselingController::class, 'cetak'])->name('konseling.cetak');
+    Route::resource('konseling', KonselingController::class);
+
+    // Manajemen Materi Ajar
+    Route::resource('materi-ajar', MateriAjarController::class);
+
+    // Endpoint AJAX untuk Cascading Dropdown Kelas -> Siswa
+    Route::get('api/kelas/{kelasId}/siswa', [CatatanPelanggaranController::class, 'getSiswaByKelas'])->name('api.kelas.siswa');
 });
 
 // --- Rute Profil Bawaan Laravel ---
@@ -57,6 +71,8 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'role:admin-sekolah'])->group(function () {
     Route::resource('users', UserController::class);
     Route::resource('siswa', SiswaController::class);
+    Route::get('mapel/{id}/assign', [MapelController::class, 'assignGuru'])->name('mapel.assign');
+    Route::post('mapel/{id}/assign', [MapelController::class, 'storeAssignGuru'])->name('mapel.storeAssign');
     Route::resource('mapel', MapelController::class);
     Route::resource('kelas', KelasController::class)->parameters([
     'kelas' => 'kelas']);

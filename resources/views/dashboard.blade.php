@@ -9,7 +9,7 @@
         <div class="relative z-10 flex justify-between items-center">
             <div>
                 <h2 class="text-4xl font-extrabold mb-2">
-                    Selamat Datang, {{ explode(' ', Auth::user()->name)[0] }}
+                    Selamat Datang, {{ collect(explode(' ', Auth::user()->name))->take(2)->implode(' ')  }}
                 </h2>
                 <p class="text-white/80 font-light tracking-wide italic">
                     Pantau dan Kelola Aktivitas Sekolah dalam Satu Platform Terpadu.
@@ -37,40 +37,55 @@
         // Konfigurasi Quick Cards yang sudah diperbarui
         $cards = [
         'admin-sekolah' => [
-        ['name' => 'Manajemen Pengguna', 'icon' => 'users', 'route' => 'users.index'],
-        ['name' => 'Manajemen Siswa', 'icon' => 'user-group', 'route' => 'siswa.index'],
-        ['name' => 'Manajemen Kelas', 'icon' => 'academic-cap', 'route' => 'kelas.index'],
-        ['name' => 'Manajemen Mata Pelajaran', 'icon' => 'book-open', 'route' => 'mapel.index'],
-        ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => null],
-        ],
-        'guru-mapel' => [
-        ['name' => 'Presensi Siswa', 'icon' => 'clipboard-document-check', 'route' => 'presensi.index'],
-        ['name' => 'Input Nilai', 'icon' => 'pencil-square', 'route' => null],
-        ['name' => 'Materi Ajar', 'icon' => 'document-text', 'route' => null],
-        ['name' => 'Pesan & Pengumuman', 'icon' => 'bell', 'route' => null],
-        ],
-        'guru-bk' => [
-        ['name' => 'Catatan Konseling', 'icon' => 'chat-bubble-left-right', 'route' => null],
-        ['name' => 'Laporan Perkembangan Siswa', 'icon' => 'chart-bar', 'route' => null],
-        ['name' => 'Pesan & Pengumuman', 'icon' => 'bell', 'route' => null],
-        ],
-        'wali-kelas' => [
-        ['name' => 'Rekap Nilai', 'icon' => 'document-chart-pie', 'route' => null],
-        ['name' => 'Rekap Presensi', 'icon' => 'clipboard-document-list', 'route' => 'presensi.index'],
-        ['name' => 'Catatan BK Siswa', 'icon' => 'folder-open', 'route' => null],
-        ['name' => 'Profil Kelas', 'icon' => 'user-group', 'route' => null],
-        ['name' => 'Pesan & Pengumuman', 'icon' => 'bell', 'route' => null],
-        ],
-        'kepala-sekolah' => [
-        ['name' => 'Laporan Akademik', 'icon' => 'chart-bar', 'route' => null],
-        ['name' => 'Pesan & Pengumuman', 'icon' => 'bell', 'route' => null],
-        ['name' => 'Buat Pengumuman', 'icon' => 'megaphone', 'route' => null],
-        ],
-        'orang-tua' => [
-        ['name' => 'Nilai Anak', 'icon' => 'academic-cap', 'route' => null],
-        ['name' => 'Presensi Anak', 'icon' => 'check-badge', 'route' => 'presensi.index'],
-        ['name' => 'Pengumuman', 'icon' => 'bell', 'route' => null],
-        ],
+            ['name' => 'Manajemen Pengguna', 'icon' => 'users', 'route' => 'users.index'],
+            ['name' => 'Manajemen Siswa', 'icon' => 'user-group', 'route' => 'siswa.index'],
+            ['name' => 'Manajemen Kelas', 'icon' => 'academic-cap', 'route' => 'kelas.index'],
+            ['name' => 'Manajemen Mata Pelajaran', 'icon' => 'book-open', 'route' => 'mapel.index'],
+            ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => 'pengumuman.index'],
+            ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
+            ['name' => 'Master Pelanggaran', 'icon' => 'exclamation-triangle', 'route' => 'pelanggaran.index'],
+            ],
+
+            'guru-mapel' => [
+            ['name' => 'Presensi Siswa', 'icon' => 'clipboard-document-check', 'route' => null],
+            ['name' => 'Input Nilai', 'icon' => 'pencil-square', 'route' => null],
+            ['name' => 'Materi Ajar', 'icon' => 'document-text', 'route' => 'materi-ajar.index'],
+            ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => 'pengumuman.index'],
+            ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => null],
+            ],
+
+            'guru-bk' => [
+            ['name' => 'Catatan Pelanggaran', 'icon' => 'folder-open', 'route' => 'catatan-pelanggaran.index'],
+            ['name' => 'Jadwal Konseling', 'icon' => 'chat-bubble-left-right', 'route' => 'konseling.index'],
+            ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => 'pengumuman.index'],
+            ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
+            ],
+
+            'wali-kelas' => [
+            ['name' => 'Rekap Nilai', 'icon' => 'document-chart-bar', 'route' => 'nilai.index'],
+            ['name' => 'Rekap Presensi', 'icon' => 'clipboard-document-list', 'route' => 'presensi.index'],
+            ['name' => 'Catatan Pelanggaran', 'icon' => 'folder-open', 'route' => 'catatan-pelanggaran.index'],
+            ['name' => 'Jadwal Konseling', 'icon' => 'chat-bubble-left-right', 'route' => 'konseling.index'],
+            ['name' => 'Profil Kelas', 'icon' => 'user-group', 'route' => null],
+            ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => 'pengumuman.index'],
+            ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
+            ],
+
+            'kepala-sekolah' => [
+            ['name' => 'Laporan Akademik', 'icon' => 'chart-bar', 'route' => null],
+            ['name' => 'Monitoring Sistem', 'icon' => 'shield-check', 'route' => null], 
+            ['name' => 'Pesan & Pengumuman', 'icon' => 'bell', 'route' => null],
+            ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => 'pengumuman.index'],
+            ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
+            ],
+
+            'orang-tua' => [
+            ['name' => 'Nilai Anak', 'icon' => 'academic-cap', 'route' => 'nilai.index'],
+            ['name' => 'Presensi Anak', 'icon' => 'check-badge', 'route' => 'presensi.index'],
+            ['name' => 'Catatan BK Anak', 'icon' => 'folder-open', 'route' => 'catatan-pelanggaran.index'],
+            ['name' => 'Jadwal Konseling', 'icon' => 'chat-bubble-left-right', 'route' => 'konseling.index'],
+            ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
+            ],
         ];
 
         // Cari kartu berdasarkan slug, jika tidak ada gunakan default
@@ -116,7 +131,7 @@
                         <th class="bg-[#03045E] p-4 rounded-l-full text-left font-bold tracking-widest text-xs uppercase pl-6">Judul</th>
                         <th class="bg-[#03045E] p-4 text-left font-bold tracking-widest text-xs uppercase">Pengirim</th>
                         <th class="bg-[#03045E] p-4 text-center font-bold tracking-widest text-xs uppercase">Target</th>
-                        <th class="bg-[#03045E] p-4 rounded-r-full text-right font-bold tracking-widest text-xs uppercase pr-6">Waktu</th>
+                        <th class="bg-[#03045E] p-4 rounded-r-full text-right font-bold tracking-widest text-xs uppercase pr-6">Waktu Dibuat</th>
                     </tr>
                 </thead>
                 <tbody class="text-[#03045E] font-medium">
@@ -130,7 +145,7 @@
                             </span>
                         </td>
                         <td class="p-4 rounded-r-2xl text-right text-sm italic text-gray-500 pr-6">
-                            {{ $pengumuman->created_at->diffForHumans() }}
+                            {{ $pengumuman->created_at->translatedFormat('l, d F Y H:i') }}
                         </td>
                     </tr>
                     @empty

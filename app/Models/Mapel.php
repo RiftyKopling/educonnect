@@ -14,5 +14,11 @@ class Mapel extends Model
     protected $fillable = [
         'kode_mapel',
         'nama_mapel',
+        'tahun_ajaran',
     ];
+
+    public function gurus()
+    {
+        return $this->belongsToMany(User::class, 'mapel_user');
+    }
 }

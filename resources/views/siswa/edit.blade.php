@@ -18,7 +18,7 @@
                 Kembali
             </a>
             <h2 class="text-3xl font-black text-[#03045E] tracking-tight">Edit Siswa: {{ $siswa->nama_lengkap }}</h2>
-            <p class="text-gray-500 mt-1">Memperbarui informasi akademik siswa yang terdaftar di SMP Negeri 2 Mungkid.</p>
+            <p class="text-gray-500 text-sm mt-1">Memperbarui informasi akademik siswa yang terdaftar di SMP Negeri 2 Mungkid.</p>
         </div>
 
         <!-- Session Error -->
@@ -171,7 +171,7 @@
                     </div>
 
                     <!-- Submit Button -->
-                    <button type="submit" class="w-full py-4 bg-amber-500 text-white rounded-2xl font-bold shadow-lg hover:bg-amber-600 transition-all uppercase tracking-widest">
+                    <button type="submit" class="w-full py-4 bg-[#03045E] text-white rounded-2xl font-bold shadow-lg hover:bg-amber-600 transition-all uppercase tracking-widest">
                         Perbarui Data Siswa
                     </button>
                 </div>
