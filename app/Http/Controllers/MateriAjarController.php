@@ -45,12 +45,12 @@ class MateriAjarController extends Controller
             abort(403, 'Akses Ditolak: Hanya Guru Mata Pelajaran yang dapat mengunggah materi.');
         }
 
-        // Strict filtering: Only fetch Mapel and Kelas assigned to this Guru
+        // Strict filtering: Only fetch Mapel assigned to this Guru, but allow them to pick any Kelas
         $mapels = $user->mapels;
-        $kelas = $user->kelasDiajar;
+        $kelas = \App\Models\Kelas::orderBy('tingkat')->orderBy('nama_kelas')->get();
 
-        if ($mapels->isEmpty() || $kelas->isEmpty()) {
-            return redirect()->route('materi-ajar.index')->with('error', 'Anda belum ditugaskan ke Mata Pelajaran atau Kelas mana pun. Silakan hubungi Admin.');
+        if ($mapels->isEmpty()) {
+            return redirect()->route('materi-ajar.index')->with('error', 'Anda belum ditugaskan ke Mata Pelajaran mana pun. Silakan hubungi Admin.');
         }
 
         return view('materi_ajar.create', compact('mapels', 'kelas'));
@@ -77,13 +77,9 @@ class MateriAjarController extends Controller
             'url_link' => 'nullable|required_if:tipe_materi,Link URL|url',
         ]);
 
-        // Strict authorization check: Ensure the selected mapel and kelas belong to the teacher
+        // Strict authorization check: Ensure the selected mapel belong to the teacher
         if (!$user->mapels->contains('id', $request->mapel_id)) {
             abort(403, 'Anda tidak ditugaskan untuk mata pelajaran ini.');
-        }
-
-        if (!$user->kelasDiajar->contains('id', $request->kelas_id)) {
-            abort(403, 'Anda tidak ditugaskan untuk kelas ini.');
         }
 
         $data = $request->only(['judul', 'deskripsi', 'tipe_materi', 'url_link', 'mapel_id', 'kelas_id']);
@@ -116,7 +112,7 @@ class MateriAjarController extends Controller
         }
 
         $mapels = $user->mapels;
-        $kelas = $user->kelasDiajar;
+        $kelas = \App\Models\Kelas::orderBy('tingkat')->orderBy('nama_kelas')->get();
 
         return view('materi_ajar.edit', compact('materiAjar', 'mapels', 'kelas'));
     }
@@ -142,8 +138,8 @@ class MateriAjarController extends Controller
             'url_link' => 'nullable|required_if:tipe_materi,Link URL|url',
         ]);
 
-        if (!$user->mapels->contains('id', $request->mapel_id) || !$user->kelasDiajar->contains('id', $request->kelas_id)) {
-            abort(403, 'Anda tidak ditugaskan untuk mata pelajaran atau kelas ini.');
+        if (!$user->mapels->contains('id', $request->mapel_id)) {
+            abort(403, 'Anda tidak ditugaskan untuk mata pelajaran ini.');
         }
 
         $materiAjar->judul = $request->judul;

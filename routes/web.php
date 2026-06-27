@@ -13,6 +13,7 @@ use App\Http\Controllers\PelanggaranController;
 use App\Http\Controllers\CatatanPelanggaranController;
 use App\Http\Controllers\KonselingController;
 use App\Http\Controllers\MateriAjarController;
+use App\Http\Controllers\ProfilKelasController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -55,6 +56,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Manajemen Materi Ajar
     Route::resource('materi-ajar', MateriAjarController::class);
+
+    // Profil Kelas (Wali Kelas)
+    Route::get('profil-kelas', [ProfilKelasController::class, 'index'])->name('profil-kelas.index');
 
     // Endpoint AJAX untuk Cascading Dropdown Kelas -> Siswa
     Route::get('api/kelas/{kelasId}/siswa', [CatatanPelanggaranController::class, 'getSiswaByKelas'])->name('api.kelas.siswa');

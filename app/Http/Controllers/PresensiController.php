@@ -23,30 +23,130 @@ class PresensiController extends Controller
             abort(403, 'Admin Sekolah tidak memiliki akses untuk mengelola presensi harian.');
         }
 
-        $query = Presensi::with(['siswa', 'kelas', 'mapel', 'guru'])->latest('tanggal');
+        $bulan = $request->input('bulan', date('m'));
+        $tahun = $request->input('tahun', date('Y'));
+
+        $query = Presensi::with(['kelas', 'mapel', 'guru'])
+            ->whereMonth('tanggal', $bulan)
+            ->whereYear('tanggal', $tahun);
+
+        if ($request->filled('kelas_id')) {
+            $query->where('kelas_id', $request->kelas_id);
+        }
+        if ($request->filled('mapel_id')) {
+            $query->where('mapel_id', $request->mapel_id);
+        }
+
+        $isGrouped = false;
 
         // 2. Filter berdasarkan Role
         if ($user->hasRole('guru-mapel')) {
-            // Guru mapel hanya melihat riwayat inputannya sendiri
             $query->where('guru_id', $user->id);
+            $isGrouped = true;
         } elseif ($user->hasRole('wali-kelas')) {
-            // Wali kelas melihat presensi siswa di kelas yang ia ampu
             $kelasDiampu = $user->kelasDiampu;
             if ($kelasDiampu) {
                 $query->where('kelas_id', $kelasDiampu->id);
             } else {
-                // Jika belum diassign ke kelas mana pun
-                $query->where('kelas_id', 0); // Tidak tampil apa-apa
+                $query->where('kelas_id', 0); 
             }
+            $isGrouped = true;
         } elseif ($user->hasRole('orang-tua')) {
-            // Orang tua melihat presensi anaknya
             $anakIds = $user->anak->pluck('nisn');
             $query->whereIn('siswa_nisn', $anakIds);
+            if ($request->filled('mapel_id')) {
+                $query->where('mapel_id', $request->mapel_id);
+            }
+            $isOrangTua = true;
         }
 
-        $presensis = $query->paginate(20);
+        if ($isGrouped) {
+            $query->select('tanggal', 'mapel_id', 'kelas_id', 'guru_id')
+                  ->selectRaw("SUM(CASE WHEN status = 'H' THEN 1 ELSE 0 END) as total_hadir")
+                  ->selectRaw("SUM(CASE WHEN status != 'H' THEN 1 ELSE 0 END) as total_absen")
+                  ->groupBy('tanggal', 'mapel_id', 'kelas_id', 'guru_id')
+                  ->orderBy('tanggal', 'desc');
+        } else {
+            $query->with('siswa')->orderBy('tanggal', 'desc');
+        }
 
-        return view('presensi.index', compact('presensis'));
+        $presensis = $query->paginate(20)->withQueryString();
+
+        // Hitung total hadir/absen untuk seluruh bulan (bukan hanya halaman saat ini)
+        $totalHadirBulan = 0;
+        $totalAbsenBulan = 0;
+        if (isset($isOrangTua) && $isOrangTua) {
+            $anakIds = $user->anak->pluck('nisn');
+            $baseCount = \App\Models\Presensi::whereIn('siswa_nisn', $anakIds)
+                ->whereMonth('tanggal', $bulan)
+                ->whereYear('tanggal', $tahun);
+            if ($request->filled('mapel_id')) {
+                $baseCount->where('mapel_id', $request->mapel_id);
+            }
+            $totalHadirBulan = (clone $baseCount)->where('status', 'H')->count();
+            $totalAbsenBulan = (clone $baseCount)->where('status', '!=', 'H')->count();
+        }
+
+        $kelasList = [];
+        if ($user->hasRole('guru-mapel')) {
+            $mapelList = $user->mapels()->orderBy('nama_mapel')->get();
+        } elseif ($user->hasRole('orang-tua')) {
+            // Hanya tampilkan mapel yang pernah diikuti anak
+            $anakIds = $user->anak->pluck('nisn');
+            $mapelIds = \App\Models\Presensi::whereIn('siswa_nisn', $anakIds)
+                ->distinct()->pluck('mapel_id');
+            $mapelList = \App\Models\Mapel::whereIn('id', $mapelIds)->orderBy('nama_mapel')->get();
+        } else {
+            $mapelList = \App\Models\Mapel::orderBy('nama_mapel')->get();
+        }
+        $bulanList = [
+            '01' => 'Januari', '02' => 'Februari', '03' => 'Maret',
+            '04' => 'April', '05' => 'Mei', '06' => 'Juni',
+            '07' => 'Juli', '08' => 'Agustus', '09' => 'September',
+            '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
+        ];
+
+        return view('presensi.index', compact('presensis', 'isGrouped', 'kelasList', 'mapelList', 'bulanList', 'bulan', 'tahun', 'totalHadirBulan', 'totalAbsenBulan'));
+    }
+
+    /**
+     * Tampilkan detail sesi presensi (untuk Guru & Wali Kelas)
+     */
+    public function show($id)
+    {
+        $user = Auth::user();
+        if ($user->hasRole('admin-sekolah') || $user->hasRole('orang-tua')) {
+            abort(403);
+        }
+
+        // Format $id: "YYYY-MM-DD_mapelId_kelasId"
+        $parts = explode('_', $id);
+        if (count($parts) !== 3) {
+            abort(404);
+        }
+
+        $tanggal = $parts[0];
+        $mapel_id = $parts[1];
+        $kelas_id = $parts[2];
+
+        // Validasi RBAC tambahan
+        if ($user->hasRole('guru-mapel')) {
+            if (!$user->mapels->contains('id', $mapel_id)) abort(403);
+        } elseif ($user->hasRole('wali-kelas')) {
+            $kelasDiampu = $user->kelasDiampu;
+            if (!$kelasDiampu || $kelasDiampu->id != $kelas_id) abort(403);
+        }
+
+        $mapel = \App\Models\Mapel::findOrFail($mapel_id);
+        $kelas = \App\Models\Kelas::findOrFail($kelas_id);
+
+        $presensis = Presensi::with('siswa')
+            ->where('tanggal', $tanggal)
+            ->where('mapel_id', $mapel_id)
+            ->where('kelas_id', $kelas_id)
+            ->get();
+
+        return view('presensi.show', compact('presensis', 'tanggal', 'mapel', 'kelas'));
     }
 
     /**
