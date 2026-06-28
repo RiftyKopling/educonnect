@@ -8,15 +8,34 @@
             Dashboard
         </a>
         <span>›</span>
-        <span class="text-[#03045E] font-bold">Input Nilai Akademik</span>
+        <a href="{{ route('nilai.index') }}" class="hover:text-[#03045E] font-medium">Pilih Mata Pelajaran</a>
+        
+        @if(auth()->user()->hasRole('guru-mapel'))
+            <span>›</span>
+            <a href="{{ route('nilai.index', ['mapel_id' => $mapel->id]) }}" class="hover:text-[#03045E] font-medium">Pilih Kelas</a>
+        @endif
+        
+        <span>›</span>
+        <span class="text-[#03045E] font-bold">Daftar Nilai</span>
     </div>
 
     <!-- Header -->
-    <div class="mb-6 flex justify-between items-center">
+    <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
         <div>
-            <h2 class="text-3xl font-black text-[#03045E] tracking-tight">Input Nilai Akademik</h2>
-            <p class="text-gray-500 text-sm mt-1">Melihat daftar nilai akademik siswa secara lengkap.</p>
+            <div class="flex items-center gap-3">
+                @php
+                    $backRoute = auth()->user()->hasRole('guru-mapel') 
+                        ? route('nilai.index', ['mapel_id' => $mapel->id]) 
+                        : route('nilai.index');
+                @endphp
+                <a href="{{ $backRoute }}" class="p-2 bg-gray-100 text-gray-500 rounded-full hover:bg-[#03045E] hover:text-white transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                </a>
+                <h2 class="text-3xl font-black text-[#03045E] tracking-tight">Daftar Nilai Siswa</h2>
+            </div>
+            <p class="text-gray-500 text-sm mt-1">Mapel: <span class="font-bold text-[#03045E]">{{ $mapel->nama_mapel }}</span> | Kelas: <span class="font-bold text-[#03045E]">{{ $kelas->nama_kelas }}</span></p>
         </div>
+        
         <div class="flex gap-3">
             @if(auth()->user()->hasRole('guru-mapel'))
                 <a href="{{ route('nilai.create') }}" class="px-6 py-3 bg-[#03045E] text-white rounded-full font-bold shadow-lg hover:scale-105 transition-all flex items-center gap-2">
@@ -24,21 +43,18 @@
                     INPUT NILAI
                 </a>
             @endif
-            @if(auth()->user()->hasRole('orang-tua') || auth()->user()->hasRole('wali-kelas'))
-                <a href="{{ route('nilai.cetak') }}" target="_blank" class="px-6 py-3 bg-emerald-500 text-white rounded-full font-bold shadow-lg hover:scale-105 transition-all flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                    CETAK RAPOR
-                </a>
-            @endif
         </div>
     </div>
 
     <form method="GET" action="{{ route('nilai.index') }}" class="flex gap-3 mb-6 flex-wrap">
+        <input type="hidden" name="mapel_id" value="{{ $mapel->id }}">
+        <input type="hidden" name="kelas_id" value="{{ $kelas->id }}">
+
         <div class="flex-1 relative min-w-[200px]">
             <input type="text"
                 name="search"
                 value="{{ request('search') }}"
-                placeholder="Cari nama siswa, NISN, atau mata pelajaran..."
+                placeholder="Cari nama siswa atau NISN..."
                 class="w-full rounded-full border-gray-200 pl-12 pr-4 py-3 focus:ring-[#03045E] focus:border-[#03045E] shadow-sm">
             <svg class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -59,37 +75,15 @@
             @endfor
         </select>
 
-        {{-- Filter Kelas --}}
-        <select
-            name="kelas_id"
-            class="rounded-full border-gray-200 px-6 py-3 focus:ring-[#03045E] focus:border-[#03045E] shadow-sm">
-
-            <option value="">Semua Kelas</option>
-
-            @foreach($kelasList as $kelas)
-                <option
-                    value="{{ $kelas->id }}"
-                    {{ request('kelas_id')==$kelas->id?'selected':'' }}>
-                    {{ $kelas->nama_kelas }}
-                </option>
-            @endforeach
-
-        </select>
-
         <button type="submit" class="px-6 py-3 bg-[#03045E] text-white rounded-full font-bold shadow-lg hover:scale-105 transition-all">
             Cari
         </button>
 
-        @if(request()->filled('search') ||
-            request()->filled('tahun_ajaran') ||
-            request()->filled('kelas_id'))
-
-            <a href="{{ route('nilai.index') }}"
+        @if(request()->filled('search') || request()->filled('tahun_ajaran'))
+            <a href="{{ route('nilai.index', ['mapel_id' => $mapel->id, 'kelas_id' => $kelas->id]) }}"
             class="px-6 py-3 bg-gray-200 text-gray-700 rounded-full font-bold shadow-sm hover:scale-105 transition-all">
-
                 Reset
             </a>
-
         @endif
     </form>
 
@@ -97,32 +91,11 @@
     @if(session('success'))
         <div id="notif-sukses" class="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-2xl flex items-center justify-between">
             <div class="flex items-center gap-2">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                </svg>
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                 <span class="font-medium">{{ session('success') }}</span>
             </div>
             <button onclick="tutupNotif()" class="text-green-700 hover:text-green-900 ml-4">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
-        </div>
-    @endif
-
-    <!-- Notifikasi Error -->
-    @if(session('error'))
-        <div id="notif-error" class="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-2xl flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M12 3a9 9 0 100 18A9 9 0 0012 3z"/>
-                </svg>
-                <span class="font-medium">{{ session('error') }}</span>
-            </div>
-            <button onclick="tutupNotifError()" class="text-red-700 hover:text-red-900 ml-4">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
     @endif
@@ -132,8 +105,8 @@
             <table class="w-full border-separate border-spacing-y-3 min-w-[800px]">
                 <thead>
                     <tr class="text-white text-sm uppercase tracking-widest">
-                        <th class="bg-[#03045E] p-4 rounded-l-full text-left pl-6">Siswa & Kelas</th>
-                        <th class="bg-[#03045E] p-4 text-left">Mata Pelajaran & TA</th>
+                        <th class="bg-[#03045E] p-4 rounded-l-full text-left pl-6">Siswa</th>
+                        <th class="bg-[#03045E] p-4 text-center">Tahun Ajaran</th>
                         <th class="bg-[#03045E] p-4 text-center">Tugas</th>
                         <th class="bg-[#03045E] p-4 text-center">Kuis</th>
                         <th class="bg-[#03045E] p-4 text-center">UTS</th>
@@ -146,11 +119,10 @@
                     <tr class="bg-gray-50 hover:bg-white hover:shadow-md transition-all group">
                         <td class="p-4 rounded-l-2xl pl-6">
                             <div class="font-bold text-lg">{{ $n->siswa->nama_lengkap ?? '-' }}</div>
-                            <div class="text-xs text-gray-500">Kelas: {{ $n->kelas->nama_kelas ?? '-' }} | NISN: {{ $n->siswa_nisn }}</div>
+                            <div class="text-xs text-gray-500">NISN: {{ $n->siswa_nisn }}</div>
                         </td>
-                        <td class="p-4">
-                            <div class="font-bold">{{ $n->mapel->nama_mapel ?? '-' }}</div>
-                            <div class="text-xs text-gray-500">{{ $n->semester }} - {{ $n->tahun_ajaran }}</div>
+                        <td class="p-4 text-center">
+                            <div class="text-sm font-bold text-gray-500">{{ $n->semester }} - {{ $n->tahun_ajaran }}</div>
                         </td>
                         <td class="p-4 text-center">
                             <span class="px-3 py-1 rounded-full font-bold text-xs {{ $n->tugas < 75 ? 'bg-red-100 text-red-600' : 'bg-emerald-100 text-emerald-600' }}">{{ $n->tugas }}</span>
@@ -198,15 +170,6 @@
                             <span class="font-bold text-gray-400">
                                 Tidak ada data nilai ditemukan
                             </span>
-                            @if(request('search') ||
-                                request('kelas_id') ||
-                                request('tahun_ajaran'))
-
-                                <span class="text-sm text-gray-400">Coba ubah kata kunci pencarian atau filter</span>
-
-                            <a href="{{ route('nilai.index') }}"
-                            class="mt-2 px-4 py-2 bg-gray-100 text-gray-600 rounded-full text-sm font-bold hover:bg-gray-200"> Reset Pencarian </a>
-                            @endif
                         </div>
                     </td>
                     </tr>
@@ -274,31 +237,12 @@
 
         function tutupNotif(){
             const notif=document.getElementById('notif-sukses');
-
             if(notif){
                 notif.style.transition='opacity .5s';
                 notif.style.opacity='0';
-
-                setTimeout(()=>{
-                    notif.remove();
-                },500);
+                setTimeout(()=>notif.remove(),500);
             }
         }
-
-        function tutupNotifError(){
-            const notif=document.getElementById('notif-error');
-
-            if(notif){
-                notif.style.transition='opacity .5s';
-                notif.style.opacity='0';
-
-                setTimeout(()=>{
-                    notif.remove();
-                },500);
-            }
-        }
-
         setTimeout(tutupNotif,5000);
-        setTimeout(tutupNotifError,5000);
     </script>
 </x-app-layout>

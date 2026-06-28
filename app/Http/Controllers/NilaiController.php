@@ -11,9 +11,6 @@ use Illuminate\Support\Facades\Auth;
 
 class NilaiController extends Controller
 {
-    /**
-     * Tampilkan riwayat nilai berdasarkan Role
-     */
     public function index(Request $request)
     {
         $user = Auth::user();
@@ -23,59 +20,126 @@ class NilaiController extends Controller
             abort(403, 'Admin Sekolah tidak memiliki akses untuk mengelola nilai akademik harian.');
         }
 
-        $query = Nilai::with(['siswa', 'kelas', 'mapel', 'guru'])->latest('updated_at');
-
-        // Filter berdasarkan Role
-        if ($user->hasRole('guru-mapel')) {
-            $query->where('guru_id', $user->id);
-        } elseif ($user->hasRole('wali-kelas')) {
-            $kelasDiampu = $user->kelasDiampu;
-            if ($kelasDiampu) {
-                $query->where('kelas_id', $kelasDiampu->id);
-            } else {
-                $query->where('kelas_id', 0); // Tidak tampil apa-apa jika belum punya kelas
-            }
-        } elseif ($user->hasRole('orang-tua')) {
+        // 1. Logika untuk Orang Tua (Tidak ada drill-down, langsung tampil semua nilai anak)
+        if ($user->hasRole('orang-tua')) {
             $anakIds = $user->anak->pluck('nisn');
-            $query->whereIn('siswa_nisn', $anakIds);
-        }
+            $query = Nilai::with(['siswa', 'kelas', 'mapel', 'guru'])
+                ->whereIn('siswa_nisn', $anakIds)
+                ->latest('updated_at');
 
-        if($request->filled('search')){
-            $search = $request->search;
-            $query->where(function($q) use($search){
-                $q->whereHas('siswa',function($s) use($search){
-                    $s->where('nama_lengkap','like',"%{$search}%")
-                    ->orWhere('nisn','like',"%{$search}%");
+            if($request->filled('search')){
+                $search = $request->search;
+                $query->where(function($q) use($search){
+                    $q->whereHas('siswa',function($s) use($search){
+                        $s->where('nama_lengkap','like',"%{$search}%")
+                        ->orWhere('nisn','like',"%{$search}%");
+                    });
+                    $q->orWhereHas('mapel',function($m) use($search){
+                        $m->where('nama_mapel','like',"%{$search}%");
+                    });
                 });
+            }
+            if($request->filled('tahun_ajaran')){
+                $query->where('tahun_ajaran', $request->tahun_ajaran);
+            }
 
-                $q->orWhereHas('mapel',function($m) use($search){
-                    $m->where('nama_mapel','like',"%{$search}%");
-                });
-            });
+            $nilais = $query->paginate(20)->withQueryString();
+            $tahunAjaran = Nilai::select('tahun_ajaran')->distinct()->orderByDesc('tahun_ajaran')->pluck('tahun_ajaran');
+            
+            return view('nilai.index_ortu', compact('nilais', 'tahunAjaran'));
         }
 
-        if($request->filled('tahun_ajaran')){
-            $query->where('tahun_ajaran',$request->tahun_ajaran);
+        // 2. Logika untuk Wali Kelas (Mapel -> Nilai Siswa di Kelasnya)
+        if ($user->hasRole('wali-kelas')) {
+            $kelasDiampu = $user->kelasDiampu;
+            if (!$kelasDiampu) {
+                return view('nilai.index_mapel', ['mapels' => collect(), 'kelas' => null]);
+            }
+
+            if (!$request->has('mapel_id')) {
+                // Step 1: List seluruh Mapel
+                $mapels = Mapel::orderBy('nama_mapel')->get();
+                return view('nilai.index_mapel', ['mapels' => $mapels, 'kelas' => $kelasDiampu]);
+            } else {
+                // Step 2: List Nilai untuk Mapel tersebut di Kelas ampuannya
+                $mapel = Mapel::findOrFail($request->mapel_id);
+                $query = Nilai::with(['siswa', 'kelas', 'mapel', 'guru'])
+                    ->where('kelas_id', $kelasDiampu->id)
+                    ->where('mapel_id', $mapel->id)
+                    ->latest('updated_at');
+
+                if($request->filled('search')){
+                    $search = $request->search;
+                    $query->whereHas('siswa',function($s) use($search){
+                        $s->where('nama_lengkap','like',"%{$search}%")
+                        ->orWhere('nisn','like',"%{$search}%");
+                    });
+                }
+                if($request->filled('tahun_ajaran')){
+                    $query->where('tahun_ajaran', $request->tahun_ajaran);
+                }
+
+                $nilais = $query->paginate(20)->withQueryString();
+                $tahunAjaran = Nilai::select('tahun_ajaran')->distinct()->orderByDesc('tahun_ajaran')->pluck('tahun_ajaran');
+
+                return view('nilai.index_nilai', [
+                    'nilais' => $nilais, 
+                    'tahunAjaran' => $tahunAjaran, 
+                    'mapel' => $mapel, 
+                    'kelas' => $kelasDiampu
+                ]);
+            }
         }
 
-        if($request->filled('kelas_id')){
-            $query->where('kelas_id',$request->kelas_id);
+        // 3. Logika untuk Guru Mata Pelajaran (Mapel -> Kelas -> Nilai Siswa)
+        if ($user->hasRole('guru-mapel')) {
+            if (!$request->has('mapel_id')) {
+                // Step 1: List Mapel yang diampu guru tersebut
+                $mapels = $user->mapels;
+                return view('nilai.index_mapel', ['mapels' => $mapels, 'kelas' => null]);
+            } elseif (!$request->has('kelas_id')) {
+                // Step 2: List seluruh Kelas
+                $mapel = Mapel::findOrFail($request->mapel_id);
+                if (!$user->mapels->contains('id', $mapel->id)) abort(403, 'Akses ditolak.');
+
+                $kelasList = Kelas::orderBy('tingkat')->orderBy('nama_kelas')->get();
+                return view('nilai.index_kelas', ['mapel' => $mapel, 'kelasList' => $kelasList]);
+            } else {
+                // Step 3: List Nilai untuk Mapel & Kelas tersebut
+                $mapel = Mapel::findOrFail($request->mapel_id);
+                if (!$user->mapels->contains('id', $mapel->id)) abort(403, 'Akses ditolak.');
+                $kelas = Kelas::findOrFail($request->kelas_id);
+
+                $query = Nilai::with(['siswa', 'kelas', 'mapel', 'guru'])
+                    ->where('guru_id', $user->id)
+                    ->where('mapel_id', $mapel->id)
+                    ->where('kelas_id', $kelas->id)
+                    ->latest('updated_at');
+
+                if($request->filled('search')){
+                    $search = $request->search;
+                    $query->whereHas('siswa',function($s) use($search){
+                        $s->where('nama_lengkap','like',"%{$search}%")
+                        ->orWhere('nisn','like',"%{$search}%");
+                    });
+                }
+                if($request->filled('tahun_ajaran')){
+                    $query->where('tahun_ajaran', $request->tahun_ajaran);
+                }
+
+                $nilais = $query->paginate(20)->withQueryString();
+                $tahunAjaran = Nilai::select('tahun_ajaran')->distinct()->orderByDesc('tahun_ajaran')->pluck('tahun_ajaran');
+
+                return view('nilai.index_nilai', [
+                    'nilais' => $nilais, 
+                    'tahunAjaran' => $tahunAjaran, 
+                    'mapel' => $mapel, 
+                    'kelas' => $kelas
+                ]);
+            }
         }
 
-        $kelasList = Kelas::orderBy('nama_kelas')->get();
-
-        $tahunAjaran = Nilai::select('tahun_ajaran')
-            ->distinct()
-            ->orderByDesc('tahun_ajaran')
-            ->pluck('tahun_ajaran');
-
-        $nilais = $query->paginate(20)->withQueryString();
-
-        return view('nilai.index', compact(
-            'nilais',
-            'kelasList',
-            'tahunAjaran'
-        ));
+        abort(403, 'Role tidak diizinkan.');
     }
 
     /**
