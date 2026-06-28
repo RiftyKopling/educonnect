@@ -109,7 +109,7 @@
                     </div>
                 @endif
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mb-8">
                     @forelse($gurus as $guru)
                         @php
                             $isChecked = $mapel->gurus->contains($guru->id);

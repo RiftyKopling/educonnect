@@ -94,14 +94,18 @@ class PengumumanController extends Controller {
         $kelas_diampu = null;
 
         if ($roleSlug == 'admin-sekolah') {
-            // Admin hanya bisa kirim ke 'all'
+            $targets = ['all' => 'Semua User'];
+        } elseif ($roleSlug == 'kepala-sekolah') {
             $targets = [
-                'all' => 'Semua User'
+                'all' => 'Semua User',
+                'guru-mapel' => 'Guru Mata Pelajaran',
+                'wali-kelas' => 'Wali Kelas',
+                'guru-bk' => 'Guru BK',
+                'orang-tua' => 'Orang Tua'
             ];
-        } 
-        // TEMPORARY untuk role lain
-        else {
+        } else {
             $targets = [
+                'orang-tua' => 'Orang Tua',
                 'all' => 'Semua User'
             ];
         }
@@ -136,10 +140,6 @@ class PengumumanController extends Controller {
 
         // LOGIKA BERDASARKAN ROLE (FOKUS ADMIN)
         if ($roleSlug == 'admin-sekolah') {
-            $target_type = 'all';
-        } 
-        // TEMPORARY untuk role lain
-        else {
             $target_type = 'all';
         }
 
@@ -181,11 +181,21 @@ class PengumumanController extends Controller {
         $kelas_diampu = null;
 
         // Siapkan target options
-        $targets = [];
         if ($roleSlug == 'admin-sekolah') {
             $targets = ['all' => 'Semua User'];
+        } elseif ($roleSlug == 'kepala-sekolah') {
+            $targets = [
+                'all' => 'Semua User',
+                'guru-mapel' => 'Guru Mata Pelajaran',
+                'wali-kelas' => 'Wali Kelas',
+                'guru-bk' => 'Guru BK',
+                'orang-tua' => 'Orang Tua'
+            ];
         } else {
-            $targets = ['all' => 'Semua User'];
+            $targets = [
+                'orang-tua' => 'Orang Tua',
+                'all' => 'Semua User'
+            ];
         }
 
         if ($roleSlug == 'wali-kelas') {
@@ -226,8 +236,6 @@ class PengumumanController extends Controller {
 
         // Logika target sesuai role
         if ($roleSlug == 'admin-sekolah') {
-            $target_type = 'all';
-        } else {
             $target_type = 'all';
         }
 

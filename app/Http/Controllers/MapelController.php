@@ -10,7 +10,8 @@ class MapelController extends Controller
 {
     public function index()
     {
-        $query = Mapel::with('gurus')->latest();
+        // Tambahkan orderBy('id', 'desc') setelah latest()
+        $query = Mapel::with('gurus')->latest()->orderBy('id', 'desc'); 
 
         if (request('search')) {
             $query->where(function($q) {

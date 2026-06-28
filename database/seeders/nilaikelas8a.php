@@ -6,12 +6,12 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
-class Nilai10MapelKelas7ASeeder extends Seeder
+class nilaikelas8a extends Seeder
 {
     public function run(): void
     {
         // Parameter Dasar
-        $kelasId = 1; // ID Kelas 7A
+        $kelasId = 2; // ID Kelas 8A
         $tahunAjaran = '2025/2026';
         $semester = 'Ganjil';
 
@@ -70,6 +70,6 @@ class Nilai10MapelKelas7ASeeder extends Seeder
         // Insert massal ke database (10 siswa x 10 mapel = 100 baris data)
         DB::table('nilai')->insert($dataNilai);
         
-        $this->command->info('Berhasil menambahkan data nilai dummy untuk seluruh siswa kelas 7A!');
+        $this->command->info('Berhasil menambahkan data nilai dummy untuk seluruh siswa kelas 8A!');
     }
 }
