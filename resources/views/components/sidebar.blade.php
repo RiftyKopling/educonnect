@@ -34,8 +34,8 @@
             ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
         ],
         'kepala-sekolah' => [
-            ['name' => 'Laporan Akademik', 'icon' => 'chart-bar', 'route' => null], 
-            ['name' => 'Monitoring Sistem', 'icon' => 'shield-check', 'route' => null], 
+            ['name' => 'Laporan Akademik', 'icon' => 'chart-bar', 'route' => 'monitoring.akademik'], 
+            ['name' => 'Monitoring Sistem', 'icon' => 'shield-check', 'route' => 'monitoring.kedisiplinan'], 
             ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => 'pengumuman.index'],
             ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
         ],

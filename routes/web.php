@@ -14,6 +14,7 @@ use App\Http\Controllers\CatatanPelanggaranController;
 use App\Http\Controllers\KonselingController;
 use App\Http\Controllers\MateriAjarController;
 use App\Http\Controllers\ProfilKelasController;
+use App\Http\Controllers\MonitoringController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -80,6 +81,14 @@ Route::middleware(['auth', 'role:admin-sekolah'])->group(function () {
     Route::resource('mapel', MapelController::class);
     Route::resource('kelas', KelasController::class)->parameters([
     'kelas' => 'kelas']);
+});
+
+// --- RUTE MONITORING (Hanya untuk Kepala Sekolah) ---
+Route::middleware(['auth', 'role:kepala-sekolah'])->group(function () {
+    Route::get('monitoring/kedisiplinan', [MonitoringController::class, 'kedisiplinan'])->name('monitoring.kedisiplinan');
+    Route::get('monitoring/akademik', [MonitoringController::class, 'akademik'])->name('monitoring.akademik');
+    Route::get('monitoring/cetak-kedisiplinan', [MonitoringController::class, 'cetakKedisiplinan'])->name('monitoring.cetak-kedisiplinan');
+    Route::get('monitoring/cetak-akademik', [MonitoringController::class, 'cetakAkademik'])->name('monitoring.cetak-akademik');
 });
 
 require __DIR__.'/auth.php';
