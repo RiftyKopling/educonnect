@@ -49,7 +49,7 @@
             'guru-mapel' => [
             ['name' => 'Manajemen Presensi Siswa', 'icon' => 'clipboard-document-check', 'route' => 'presensi.index'],
             ['name' => 'Input Nilai Akademik', 'icon' => 'pencil-square', 'route' => 'nilai.index'],
-            ['name' => 'Materi Ajar', 'icon' => 'document-text', 'route' => 'materi-ajar.index'],
+            ['name' => 'Bank Materi Ajar', 'icon' => 'document-text', 'route' => 'materi-ajar.index'],
             ['name' => 'Manajemen Pengumuman', 'icon' => 'megaphone', 'route' => 'pengumuman.index'],
             ['name' => 'Papan Pengumuman', 'icon' => 'bell', 'route' => 'pengumuman.masuk'],
             ],

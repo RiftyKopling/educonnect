@@ -274,6 +274,7 @@ class PresensiController extends Controller
     {
         $presensi = Presensi::findOrFail($id);
         $user = Auth::user();
+        $sessionKey = $presensi->tanggal . '_' . $presensi->mapel_id . '_' . $presensi->kelas_id;
 
         // Pengecekan RBAC Edit
         if ($user->hasRole('guru-mapel')) {
@@ -289,7 +290,7 @@ class PresensiController extends Controller
             abort(403, 'Role Anda tidak diizinkan mengakses halaman ini.');
         }
 
-        return view('presensi.edit', compact('presensi'));
+        return view('presensi.edit', compact('presensi', 'sessionKey'));
     }
 
     /**

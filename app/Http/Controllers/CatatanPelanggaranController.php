@@ -14,11 +14,16 @@ class CatatanPelanggaranController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
         
-        $query = CatatanPelanggaran::with(['siswa', 'pelanggaran', 'guruBk']);
+        $query = CatatanPelanggaran::with(['siswa', 'pelanggaran', 'guruBk'])
+        ->when($request->bulan, fn($q) => $q->whereMonth('tanggal', $request->bulan))
+        ->when($request->tahun, fn($q) => $q->whereYear('tanggal', $request->tahun))
+        ->when($request->pelanggaran_id, fn($q) => $q->where('pelanggaran_id', $request->pelanggaran_id))
+        ->when($request->kelas_id, fn($q) => $q->whereHas('siswa', fn($q2) => $q2->where('kelas_id', $request->kelas_id)))
+        ->latest('tanggal');
 
         if ($user->hasRole('guru-bk')) {
             // Melihat semua
@@ -34,11 +39,15 @@ class CatatanPelanggaranController extends Controller
         } else {
             abort(403, 'Akses ditolak.');
         }
+    
+        $catatanPelanggarans = $query->paginate(15)->withQueryString();
+        $pelanggaranList = Pelanggaran::orderBy('nama_pelanggaran')->get();
+        $kelasList = Kelas::orderBy('nama_kelas')->get();
 
-        $catatanPelanggarans = $query->orderBy('tanggal', 'desc')->get();
-
-        return view('catatan_pelanggaran.index', compact('catatanPelanggarans'));
+        return view('catatan_pelanggaran.index', compact('catatanPelanggarans', 'pelanggaranList', 'kelasList'));
     }
+
+
 
     /**
      * Show the form for creating a new resource.
@@ -68,6 +77,11 @@ class CatatanPelanggaranController extends Controller
             'siswa_nisn' => 'required|exists:siswa,nisn',
             'pelanggaran_id' => 'required|exists:pelanggarans,id',
             'keterangan' => 'nullable|string',
+        ],
+        [
+            'siswa_nisn.required'     => 'Siswa wajib dipilih.',
+            'pelanggaran_id.required' => 'Jenis pelanggaran wajib dipilih.',
+            'tanggal.required'        => 'Tanggal insiden wajib diisi.',
         ]);
 
         CatatanPelanggaran::create([

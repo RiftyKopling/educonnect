@@ -5,13 +5,13 @@
             Dashboard
         </a>
         <span>›</span>
-        <span class="text-[#03045E] font-bold">Materi Ajar</span>
+        <span class="text-[#03045E] font-bold">Bank Materi Ajar</span>
     </div>
 
     <div class="mb-6 flex justify-between items-center">
         <div>
-            <h2 class="text-3xl font-black text-[#03045E] tracking-tight uppercase">Bank Materi Pribadi</h2>
-            <p class="text-gray-500">Kelola dokumen materi dan tautan pembelajaran Anda.</p>
+            <h2 class="text-3xl font-black text-[#03045E] tracking-tight">Bank Materi Ajar Pribadi</h2>
+            <p class="text-gray-500 text-sm mt-1">Kelola dokumen materi dan tautan pembelajaran Anda.</p>
         </div>
         @if(auth()->user()->hasRole('guru-mapel'))
             <a href="{{ route('materi-ajar.create') }}" class="px-6 py-3 bg-[#03045E] text-white rounded-full font-bold shadow-lg hover:scale-105 transition-all flex items-center gap-2">
@@ -22,22 +22,33 @@
     </div>
 
     @if(session('success'))
-        <div class="mb-6 p-4 bg-emerald-500 text-white rounded-2xl shadow-md font-bold flex items-center gap-2">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            {{ session('success') }}
+        <div id="notif-sukses" class="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-2xl flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <span class="font-medium">{{ session('success') }}</span>
+            </div>
+            <button onclick="tutupNotif()" class="text-green-700 hover:text-green-900 ml-4">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
         </div>
     @endif
     
     @if(session('error'))
-        <div class="mb-6 p-4 bg-red-500 text-white rounded-2xl shadow-md font-bold flex items-center gap-2">
-            {{ session('error') }}
+        <div id="notif-error" class="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-2xl flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M12 3a9 9 0 100 18A9 9 0 0012 3z"/></svg>
+                <span class="font-medium">{{ session('error') }}</span>
+            </div>
+            <button onclick="tutupNotifError()" class="text-red-700 hover:text-red-900 ml-4">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
         </div>
     @endif
 
     <div class="bg-white rounded-[2rem] shadow-sm p-6 border border-gray-100 overflow-x-auto">
         <table class="w-full border-separate border-spacing-y-3 min-w-[800px]">
             <thead>
-                <tr class="text-white text-xs uppercase tracking-[0.1em] font-black">
+                <tr class="text-white text-sm uppercase tracking-widest">
                     <th class="bg-[#03045E] p-4 rounded-l-full text-left pl-6 w-1/3">Judul Materi</th>
                     <th class="bg-[#03045E] p-4 text-left">Mapel & Kelas</th>
                     <th class="bg-[#03045E] p-4 text-center">Tipe / Format</th>
@@ -81,15 +92,23 @@
                             
                             @if(auth()->user()->hasRole('guru-mapel') && $materi->guru_id === auth()->id())
                                 <a href="{{ route('materi-ajar.edit', $materi->id) }}" class="px-3 py-2 bg-amber-100 text-amber-600 rounded-xl hover:bg-amber-500 hover:text-white transition-all font-bold text-xs inline-block">Edit</a>
-                                <form action="{{ route('materi-ajar.destroy', $materi->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menghapus materi ini? File juga akan terhapus.');">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" class="px-3 py-2 bg-red-100 text-red-600 rounded-xl hover:bg-red-500 hover:text-white transition-all font-bold text-xs">Hapus</button>
-                                </form>
+                                <button 
+                                    type="button"
+                                    data-url="{{ route('materi-ajar.destroy', $materi->id) }}"
+                                    data-nama="{{ $materi->judul }}"
+                                    onclick="bukaModal(this.dataset.url, this.dataset.nama)"
+                                    class="px-3 py-2 bg-red-100 text-red-600 rounded-xl hover:bg-red-500 hover:text-white transition-all font-bold text-xs">
+                                    Hapus
+                                </button>
                             @elseif(auth()->user()->hasRole('admin-sekolah'))
-                                <form action="{{ route('materi-ajar.destroy', $materi->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menghapus materi ini? File juga akan terhapus.');">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" class="px-3 py-2 bg-red-100 text-red-600 rounded-xl hover:bg-red-500 hover:text-white transition-all font-bold text-xs">Hapus (Admin)</button>
-                                </form>
+                                <button 
+                                    type="button"
+                                    data-url="{{ route('materi-ajar.destroy', $materi->id) }}"
+                                    data-nama="{{ $materi->judul }}"
+                                    onclick="bukaModal(this.dataset.url, this.dataset.nama)"
+                                    class="px-3 py-2 bg-red-100 text-red-600 rounded-xl hover:bg-red-500 hover:text-white transition-all font-bold text-xs">
+                                    Hapus
+                                </button>
                             @endif
                         </div>
                     </td>
@@ -106,4 +125,72 @@
             {{ $materiAjars->links() }}
         </div>
     </div>
+
+    <!-- Modal Konfirmasi Hapus -->
+    <div id="modal-hapus" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50">
+        <div class="bg-white rounded-2xl shadow-xl p-8 max-w-sm w-full mx-4">
+            <div class="flex flex-col items-center text-center gap-4">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                    <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-black text-[#03045E]">Hapus Materi?</h3>
+                    <p class="text-gray-500 text-sm mt-1">Data Materi <span id="nama-materi" class="font-bold text-[#03045E]"></span> akan dihapus permanen dan tidak bisa dikembalikan.</p>
+                </div>
+                <div class="flex gap-3 w-full mt-2">
+                    <button onclick="tutupModal()" class="flex-1 py-3 bg-navy text-white rounded-xl font-bold hover:bg-navy-200 transition-all">
+                        Batal
+                    </button>
+                    <form id="form-hapus" method="POST" class="flex-1">
+                        @csrf @method('DELETE')
+                        <button type="submit" class="w-full py-3 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition-all">
+                            Hapus
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function bukaModal(url, nama) {
+            document.getElementById('nama-materi').textContent = nama;
+            document.getElementById('form-hapus').action = url;
+            const modal = document.getElementById('modal-hapus');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function tutupModal() {
+            const modal = document.getElementById('modal-hapus');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // Tutup modal kalau klik di luar
+        document.getElementById('modal-hapus').addEventListener('click', function(e) {
+            if (e.target === this) tutupModal();
+        });
+    </script>
+
+    <script>
+        function tutupNotif() {
+            const notif = document.getElementById('notif-sukses');
+            if (notif) {
+                notif.style.transition = 'opacity 0.5s';
+                notif.style.opacity = '0';
+                setTimeout(() => notif.remove(), 500);
+            }
+        }
+        function tutupNotifError() {
+            const notif = document.getElementById('notif-error');
+            if (notif) {
+                notif.style.transition = 'opacity 0.5s';
+                notif.style.opacity = '0';
+                setTimeout(() => notif.remove(), 500);
+            }
+        }
+        setTimeout(tutupNotif, 5000);
+        setTimeout(tutupNotifError, 5000);
+    </script>
 </x-app-layout>

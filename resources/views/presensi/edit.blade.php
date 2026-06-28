@@ -7,11 +7,13 @@
         <span>›</span>
         <a href="{{ route('presensi.index') }}" class="hover:text-[#03045E] font-medium">Manajemen Presensi Siswa</a>
         <span>›</span>
+        <a href="{{ route('presensi.show', $sessionKey) }}" class="hover:text-[#03045E] font-medium">Detail Sesi Presensi</a>
+        <span>›</span>
         <span class="text-[#03045E] font-bold">Edit Status Presensi </span>
     </div>
 
     <!-- Tombol Kembali -->
-    <a href="{{ route('presensi.index') }}" class="flex items-center gap-2 text-sm text-gray-500 hover:text-[#03045E] font-medium mb-4">
+    <a href="{{ route('presensi.show', $sessionKey) }}" class="flex items-center gap-2 text-sm text-gray-500 hover:text-[#03045E] font-medium mb-4">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
         </svg>
@@ -84,7 +86,7 @@
                 </div>
 
                 <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
-                    <a href="{{ route('presensi.index') }}" class="px-8 py-3 bg-gray-100 text-gray-600 rounded-full font-bold hover:bg-gray-200 transition-all">BATAL</a>
+                    <a href="{{ route('presensi.show', $sessionKey) }}" class="px-8 py-3 bg-gray-100 text-gray-600 rounded-full font-bold hover:bg-gray-200 transition-all">BATAL</a>
                     <button type="submit" class="px-8 py-3 bg-[#03045E] text-white rounded-full font-bold shadow-lg hover:scale-105 transition-all">SIMPAN PERUBAHAN</button>
                 </div>
             </form>

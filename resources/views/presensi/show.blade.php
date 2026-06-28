@@ -1,19 +1,23 @@
 <x-app-layout>
-    <!-- Breadcrumb -->
-    <div class="flex items-center gap-2 text-sm text-gray-500 mb-4">
-        <a href="{{ route('dashboard') }}" class="hover:text-[#03045E] font-medium flex items-center gap-1">
+    <div class="mb-8">
+        <div class="flex items-center gap-2 text-sm text-gray-500 mb-2">
+            <a href="{{ route('dashboard') }}" class="hover:text-[#03045E] font-medium">
+                Dashboard
+            </a>
+            <span>›</span>
+            <a href="{{ route('presensi.index') }}" class="hover:text-[#03045E] font-medium">Manajemen Presensi Siswa</a>
+                <span>›</span>
+                <span class="text-[#03045E] font-bold">Detail Sesi Presensi</span>
+        </div>
+        <a href="{{ route('presensi.index') }}" class="flex items-center gap-2 text-sm text-gray-500 hover:text-[#03045E] font-medium mb-4">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-            Dashboard
+            Kembali
         </a>
-        <span>›</span>
-        <a href="{{ route('presensi.index') }}" class="hover:text-[#03045E] font-medium">Manajemen Presensi</a>
-        <span>›</span>
-        <span class="text-[#03045E] font-bold">Detail Sesi</span>
     </div>
 
     <!-- Header -->
     <div class="mb-6">
-        <h2 class="text-3xl font-black text-[#03045E] tracking-tight">Detail Presensi</h2>
+        <h2 class="text-3xl font-black text-[#03045E] tracking-tight">Detail Sesi Presensi</h2>
         <div class="mt-4 flex flex-wrap gap-4 text-sm font-bold text-gray-700">
             <div class="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border border-gray-100">
                 <svg class="w-5 h-5 text-[#03045E]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
@@ -80,12 +84,16 @@
                                 @endif
                                 
                                 @if(auth()->user()->hasRole('guru-mapel'))
-                                    <form action="{{ route('presensi.destroy', $p->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data presensi ini?')">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="p-2 bg-red-100 text-red-600 rounded-xl hover:bg-red-500 hover:text-white transition-colors">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                        </button>
-                                    </form>
+                                    <button 
+                                        type="button"
+                                        data-url="{{ route('presensi.destroy', $p->id) }}"
+                                        data-nama="{{ $p->siswa->nama_lengkap ?? $p->siswa_nisn }}"
+                                        onclick="bukaModal(this.dataset.url, this.dataset.nama)"
+                                        class="p-2 bg-red-100 text-red-600 rounded-xl hover:bg-red-500 hover:text-white transition-colors">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                    </button>
                                 @endif
                             </div>
                         </td>
@@ -102,6 +110,40 @@
         </div>
     </div>
     
+    <!-- Modal Konfirmasi Hapus -->
+    <div id="modal-hapus" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50">
+        <div class="bg-white rounded-2xl shadow-xl p-8 max-w-sm w-full mx-4">
+            <div class="flex flex-col items-center text-center gap-4">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                    <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-black text-[#03045E]">Hapus Data Presensi?</h3>
+                    <p class="text-gray-500 text-sm mt-1">
+                        Data presensi "<span id="nama-presensi" class="font-bold text-[#03045E]"></span>"
+                        akan dihapus permanen dan tidak bisa dikembalikan.
+                    </p>
+                </div>
+                <div class="flex gap-3 w-full mt-2">
+                    <button onclick="tutupModal()" type="button"
+                        class="flex-1 py-3 bg-[#03045E] text-white rounded-xl font-bold hover:bg-[#05086b] transition-all">
+                        Batal
+                    </button>
+                    <form id="form-hapus" method="POST" class="flex-1">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit"
+                            class="w-full py-3 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition-all">
+                            Hapus
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         function tutupNotif() {
             const notif = document.getElementById('notif-sukses');
@@ -111,6 +153,31 @@
                 setTimeout(() => notif.remove(), 500);
             }
         }
+        function tutupNotifError() {
+            const notif = document.getElementById('notif-error');
+            if (notif) {
+                notif.style.transition = 'opacity 0.5s';
+                notif.style.opacity = '0';
+                setTimeout(() => notif.remove(), 500);
+            }
+        }
         setTimeout(tutupNotif, 5000);
+        setTimeout(tutupNotifError, 5000);
+
+        function bukaModal(url, nama) {
+            document.getElementById('nama-presensi').textContent = nama;
+            document.getElementById('form-hapus').action = url;
+            const modal = document.getElementById('modal-hapus');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+        function tutupModal() {
+            const modal = document.getElementById('modal-hapus');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+        document.getElementById('modal-hapus').addEventListener('click', function(e) {
+            if (e.target === this) tutupModal();
+        });
     </script>
 </x-app-layout>

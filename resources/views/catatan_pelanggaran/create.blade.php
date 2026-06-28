@@ -1,71 +1,111 @@
 <x-app-layout>
-    <div class="flex items-center gap-2 text-sm text-gray-500 mb-4">
-        <a href="{{ route('catatan-pelanggaran.index') }}" class="hover:text-[#03045E] font-medium flex items-center gap-1">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-            Catatan Pelanggaran
-        </a>
-        <span>›</span>
-        <span class="text-[#03045E] font-bold">Catat Baru</span>
+    <div class="max-w-3xl mx-auto">
+        <div class="mb-8">
+            <div class="flex items-center gap-2 text-sm text-gray-500 mb-2">
+                <a href="{{ route('dashboard') }}" class="hover:text-[#03045E] font-medium">Dashboard</a>
+                <span>›</span>
+                <a href="{{ route('catatan-pelanggaran.index') }}" class="hover:text-[#03045E] font-medium">Catatan Pelanggaran</a>
+                <span>›</span>
+                <span class="text-[#03045E] font-bold">Catat Baru</span>
+            </div>
+            <a href="{{ route('catatan-pelanggaran.index') }}" class="flex items-center gap-2 text-sm text-gray-500 hover:text-[#03045E] font-medium mb-4">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Kembali
+            </a>
+            <h2 class="text-3xl font-black text-[#03045E] tracking-tight">Catat Pelanggaran Siswa</h2>
+            <p class="text-gray-500 text-sm mt-1">Tambahkan catatan pelanggaran siswa baru.</p>
+        </div>
+
+        <div class="bg-white rounded-[2rem] shadow-sm p-8 border border-gray-100">
+            <form action="{{ route('catatan-pelanggaran.store') }}" method="POST" class="space-y-6">
+                @csrf
+
+                @if(session('error'))
+                    <div id="notif-error" class="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-2xl flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M12 3a9 9 0 100 18A9 9 0 0012 3z"/></svg>
+                            <span class="font-medium">{{ session('error') }}</span>
+                        </div>
+                        <button onclick="tutupNotifError()" class="text-red-700 hover:text-red-900 ml-4">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+                @endif
+
+                @if($errors->any())
+                    <div class="mb-6 p-4 bg-red-50 border border-red-400 text-red-700 rounded-2xl">
+                        <div class="flex items-center gap-2 mb-2">
+                            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M12 3a9 9 0 100 18A9 9 0 0012 3z"/></svg>
+                            <span class="font-bold">Catat Pelanggaran dibatalkan. Terdapat {{ $errors->count() }} kesalahan:</span>
+                        </div>
+                        <ul class="list-disc list-inside space-y-1 text-sm">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                <div>
+                    <label class="block text-sm font-bold text-[#03045E] mb-2 uppercase tracking-widest">Tanggal Insiden</label>
+                    <input type="date" name="tanggal" value="{{ old('tanggal', date('Y-m-d')) }}"
+                        class="w-full bg-gray-50 border border-gray-200 text-[#03045E] rounded-2xl p-4 focus:ring-4 focus:ring-[#03045E]/20 focus:border-[#03045E] transition-all font-medium">
+                    @error('tanggal') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-[#03045E] mb-2 uppercase tracking-widest">Pilih Kelas</label>
+                    <select id="kelas_id" class="w-full bg-gray-50 border border-gray-200 text-[#03045E] rounded-2xl p-4 focus:ring-4 focus:ring-[#03045E]/20 focus:border-[#03045E] transition-all font-medium">
+                        <option value="">-- Pilih Kelas Terlebih Dahulu --</option>
+                        @foreach($kelasList as $kelas)
+                            <option value="{{ $kelas->id }}">{{ $kelas->nama_kelas }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-[#03045E] mb-2 uppercase tracking-widest">Pilih Siswa</label>
+                    <select id="siswa_nisn" name="siswa_nisn"
+                        class="w-full bg-gray-50 border border-gray-200 text-[#03045E] rounded-2xl p-4 focus:ring-4 focus:ring-[#03045E]/20 focus:border-[#03045E] transition-all font-medium" disabled>
+                        <option value="">-- Pilih Siswa --</option>
+                    </select>
+                    @error('siswa_nisn') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-[#03045E] mb-2 uppercase tracking-widest">Jenis Pelanggaran</label>
+                    <select name="pelanggaran_id"
+                        class="w-full bg-gray-50 border border-gray-200 text-[#03045E] rounded-2xl p-4 focus:ring-4 focus:ring-[#03045E]/20 focus:border-[#03045E] transition-all font-medium">
+                        <option value="">-- Pilih Pelanggaran --</option>
+                        @foreach($pelanggarans as $pelanggaran)
+                            <option value="{{ $pelanggaran->id }}" {{ old('pelanggaran_id') == $pelanggaran->id ? 'selected' : '' }}>
+                                [{{ $pelanggaran->kategori }}] {{ $pelanggaran->nama_pelanggaran }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('pelanggaran_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-[#03045E] mb-2 uppercase tracking-widest">Keterangan Detail</label>
+                    <textarea name="keterangan" rows="4"
+                        class="w-full bg-gray-50 border border-gray-200 text-[#03045E] rounded-2xl p-4 focus:ring-4 focus:ring-[#03045E]/20 focus:border-[#03045E] transition-all font-medium"
+                        placeholder="Tuliskan detail insiden secara deskriptif...">{{ old('keterangan') }}</textarea>
+                    @error('keterangan') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
+
+                <button type="submit" class="w-full py-4 bg-[#03045E] text-white rounded-2xl font-bold shadow-lg hover:bg-blue-900 transition-all uppercase tracking-widest">
+                    Simpan Data
+                </button>
+            </form>
+        </div>
     </div>
 
-    <div class="mb-6">
-        <h2 class="text-3xl font-black text-[#03045E] tracking-tight uppercase">Catat Pelanggaran Siswa</h2>
-    </div>
-
-    <div class="bg-white rounded-[2rem] shadow-sm p-8 border border-gray-100 max-w-2xl">
-        <form action="{{ route('catatan-pelanggaran.store') }}" method="POST" class="space-y-6">
-            @csrf
-            
-            <div>
-                <label class="block text-sm font-bold text-[#03045E] mb-2 uppercase tracking-wide">Tanggal Insiden</label>
-                <input type="date" name="tanggal" required class="w-full bg-gray-50 border border-gray-200 text-[#03045E] rounded-2xl p-4 focus:ring-4 focus:ring-[#03045E]/20 focus:border-[#03045E] transition-all font-medium" value="{{ date('Y-m-d') }}">
-            </div>
-
-            <div>
-                <label class="block text-sm font-bold text-[#03045E] mb-2 uppercase tracking-wide">Pilih Kelas</label>
-                <select id="kelas_id" class="w-full bg-gray-50 border border-gray-200 text-[#03045E] rounded-2xl p-4 focus:ring-4 focus:ring-[#03045E]/20 focus:border-[#03045E] transition-all font-medium">
-                    <option value="">-- Pilih Kelas Terlebih Dahulu --</option>
-                    @foreach($kelasList as $kelas)
-                        <option value="{{ $kelas->id }}">{{ $kelas->nama_kelas }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div>
-                <label class="block text-sm font-bold text-[#03045E] mb-2 uppercase tracking-wide">Pilih Siswa</label>
-                <select id="siswa_nisn" name="siswa_nisn" required class="w-full bg-gray-50 border border-gray-200 text-[#03045E] rounded-2xl p-4 focus:ring-4 focus:ring-[#03045E]/20 focus:border-[#03045E] transition-all font-medium" disabled>
-                    <option value="">-- Pilih Siswa --</option>
-                </select>
-            </div>
-
-            <div>
-                <label class="block text-sm font-bold text-[#03045E] mb-2 uppercase tracking-wide">Jenis Pelanggaran</label>
-                <select name="pelanggaran_id" required class="w-full bg-gray-50 border border-gray-200 text-[#03045E] rounded-2xl p-4 focus:ring-4 focus:ring-[#03045E]/20 focus:border-[#03045E] transition-all font-medium">
-                    <option value="">-- Pilih Pelanggaran --</option>
-                    @foreach($pelanggarans as $pelanggaran)
-                        <option value="{{ $pelanggaran->id }}">[{{ $pelanggaran->kategori }}] {{ $pelanggaran->nama_pelanggaran }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div>
-                <label class="block text-sm font-bold text-[#03045E] mb-2 uppercase tracking-wide">Keterangan Detail</label>
-                <textarea name="keterangan" rows="4" class="w-full bg-gray-50 border border-gray-200 text-[#03045E] rounded-2xl p-4 focus:ring-4 focus:ring-[#03045E]/20 focus:border-[#03045E] transition-all font-medium" placeholder="Tuliskan detail insiden secara deskriptif..."></textarea>
-            </div>
-
-            <div class="pt-4 flex gap-4">
-                <button type="submit" class="px-8 py-4 bg-[#03045E] text-white rounded-full font-bold shadow-lg hover:scale-105 transition-all">SIMPAN DATA</button>
-                <a href="{{ route('catatan-pelanggaran.index') }}" class="px-8 py-4 bg-gray-100 text-gray-500 rounded-full font-bold hover:bg-gray-200 transition-all">BATAL</a>
-            </div>
-        </form>
-    </div>
-
-    <!-- Script for Cascading Dropdown -->
     <script>
         document.getElementById('kelas_id').addEventListener('change', function() {
             let kelasId = this.value;
             let siswaDropdown = document.getElementById('siswa_nisn');
-            
+
             siswaDropdown.innerHTML = '<option value="">Memuat data...</option>';
             siswaDropdown.disabled = true;
 
@@ -87,5 +127,15 @@
                 siswaDropdown.innerHTML = '<option value="">-- Pilih Siswa --</option>';
             }
         });
+
+        function tutupNotifError() {
+            const notif = document.getElementById('notif-error');
+            if (notif) {
+                notif.style.transition = 'opacity 0.5s';
+                notif.style.opacity = '0';
+                setTimeout(() => notif.remove(), 500);
+            }
+        }
+        setTimeout(tutupNotifError, 5000);
     </script>
 </x-app-layout>

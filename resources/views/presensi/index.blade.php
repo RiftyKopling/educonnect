@@ -10,18 +10,20 @@
             Dashboard
         </a>
         <span>›</span>
-        <span class="text-[#03045E] font-bold">Manajemen Presensi</span>
+        <span class="text-[#03045E] font-bold">Manajemen Presensi Siswa</span>
     </div>
 
     <!-- Header -->
     <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
         <div>
-            <h2 class="text-3xl font-black text-[#03045E] tracking-tight uppercase">Manajemen Presensi</h2>
             @if(auth()->user()->hasRole('orang-tua'))
+                <h2 class="text-3xl font-black text-[#03045E] tracking-tight">Rekap Presensi Siswa</h2>
                 <p class="text-gray-500 text-sm mt-1">Pantau kehadiran anak Anda per mata pelajaran.</p>
             @elseif(auth()->user()->hasRole('wali-kelas'))
+                <h2 class="text-3xl font-black text-[#03045E] tracking-tight">Rekap Presensi Siswa</h2>
                 <p class="text-gray-500 text-sm mt-1">Riwayat presensi siswa di kelas Anda.</p>
             @else
+                <h2 class="text-3xl font-black text-[#03045E] tracking-tight">Manajemen Presensi Siswa</h2>
                 <p class="text-gray-500 text-sm mt-1">Kelola dan monitor riwayat presensi siswa.</p>
             @endif
         </div>
@@ -106,7 +108,9 @@
                 </div>
                 <!-- Progress bar -->
                 <div class="w-full bg-blue-200 rounded-full h-2">
-                    <div class="bg-blue-500 h-2 rounded-full transition-all duration-500" style="width: {{ $persenBar }}%"></div>
+                    <div class="bg-blue-500 h-2 rounded-full transition-all duration-500" 
+                        style="--progress: {{ $persenBar }}%; width: var(--progress);">
+                    </div>
                 </div>
             </div>
         </div>
