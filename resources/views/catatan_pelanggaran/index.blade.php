@@ -6,7 +6,7 @@
             Dashboard
         </a>
         <span>›</span>
-        <span class="text-[#03045E] font-bold">Catatan Pelanggaran</span>
+        <span class="text-[#03045E] font-bold">Catatan Pelanggaran Siswa</span>
     </div>
 
     <!-- Header -->
@@ -16,16 +16,19 @@
             <p class="text-gray-500 text-sm mt-1">Melihat rekam jejak perilaku siswa.</p>
         </div>
         <div class="flex gap-3">
-            @if(auth()->user()->hasRole('guru-bk') || auth()->user()->hasRole('admin-sekolah'))
+            @if(auth()->user()->hasRole('guru-bk'))
                 <a href="{{ route('catatan-pelanggaran.create') }}" class="px-6 py-3 bg-[#03045E] text-white rounded-full font-bold shadow-lg hover:scale-105 transition-all flex items-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                     CATAT PELANGGARAN
                 </a>
             @endif
-            <a href="{{ route('catatan-pelanggaran.cetak') }}" target="_blank" class="px-6 py-3 bg-emerald-500 text-white rounded-full font-bold shadow-lg hover:scale-105 transition-all flex items-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                CETAK LAPORAN
-            </a>
+
+            @if(auth()->user()->hasRole('guru-bk') || auth()->user()->hasRole('orang-tua'))
+                <a href="{{ route('catatan-pelanggaran.cetak') }}" target="_blank" class="px-6 py-3 bg-emerald-500 text-white rounded-full font-bold shadow-lg hover:scale-105 transition-all flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                    CETAK LAPORAN
+                </a>
+            @endif
         </div>
     </div>
 
@@ -110,7 +113,32 @@
                         <div class="font-bold">{{ $catatan->guruBk->name ?? '-' }}</div>
                     </td>
                     <td class="p-4 rounded-r-2xl text-center">
-                        <a href="{{ route('catatan-pelanggaran.show', $catatan->id) }}" class="px-3 py-2 bg-blue-100 text-blue-600 rounded-xl hover:bg-blue-500 hover:text-white transition-all font-bold text-xs inline-block">Detail</a>
+                        <div class="flex justify-center gap-2">
+                            <a href="{{ route('catatan-pelanggaran.show', $catatan->id) }}" class="p-2 bg-blue-100 text-blue-600 rounded-xl hover:bg-blue-500 hover:text-white transition-all">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                            </a>
+                            @if(auth()->user()->hasRole('guru-bk'))
+                                <a href="{{ route('catatan-pelanggaran.edit', $catatan->id) }}" class="p-2 bg-amber-100 text-amber-600 rounded-xl hover:bg-amber-500 hover:text-white transition-all">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                    </svg>
+                                </a>
+                                <button
+                                    type="button"
+                                    data-url="{{ route('catatan-pelanggaran.destroy', $catatan->id) }}"
+                                    data-nama="{{ $catatan->siswa->nama_lengkap ?? $catatan->siswa_nisn }}"
+                                    data-tanggal="{{ \Carbon\Carbon::parse($catatan->tanggal)->format('d M Y') }}"
+                                    onclick="bukaModal(this.dataset.url, this.dataset.nama, this.dataset.tanggal)"
+                                    class="p-2 bg-red-100 text-red-600 rounded-xl hover:bg-red-500 hover:text-white transition-all">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                </button>
+                            @endif
+                        </div>
                     </td>
                 </tr>
                 @empty
@@ -131,6 +159,37 @@
         </table>
     </div>
 
+    <div id="modal-hapus" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50">
+        <div class="bg-white rounded-2xl shadow-xl p-8 max-w-sm w-full mx-4">
+            <div class="flex flex-col items-center text-center gap-4">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                    <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-black text-[#03045E]">Hapus Catatan Pelanggaran?</h3>
+                    <p class="text-gray-500 text-sm mt-1">
+                        Catatan pelanggaran atas nama <span id="nama-catatan" class="font-bold text-[#03045E]"></span>
+                        pada tanggal <span id="tanggal-catatan" class="font-bold text-[#03045E]"></span>
+                        akan dihapus permanen dan tidak bisa dikembalikan.
+                    </p>
+                </div>
+                <div class="flex gap-3 w-full mt-2">
+                    <button onclick="tutupModal()" class="flex-1 py-3 bg-[#03045E] text-white rounded-xl font-bold hover:bg-[#05086b] transition-all">
+                        Batal
+                    </button>
+                    <form id="form-hapus" method="POST" class="flex-1">
+                        @csrf @method('DELETE')
+                        <button type="submit" class="w-full py-3 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition-all">
+                            Hapus
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         function tutupNotif() {
             const notif = document.getElementById('notif-sukses');
@@ -140,7 +199,24 @@
                 setTimeout(() => notif.remove(), 500);
             }
         }
-        setTimeout(tutupNotif, 5000);
-    </script>
 
+        function bukaModal(url, nama, tanggal) {
+            document.getElementById('nama-catatan').textContent = nama;
+            document.getElementById('tanggal-catatan').textContent = tanggal;
+            document.getElementById('form-hapus').action = url;
+            const modal = document.getElementById('modal-hapus');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+        
+        function tutupModal() {
+            const modal = document.getElementById('modal-hapus');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        document.getElementById('modal-hapus').addEventListener('click', function(e) {
+            if (e.target === this) tutupModal();
+        });
+    </script>
 </x-app-layout>
