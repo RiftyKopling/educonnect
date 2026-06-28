@@ -12,11 +12,16 @@ class KonselingController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
-        
-        $query = Konseling::with(['siswa', 'guruBk']);
+
+        $query = Konseling::with(['siswa.kelas', 'guruBk'])
+            ->when($request->search, fn($q) => $q->whereHas('siswa', fn($q2) => $q2->where('nama_lengkap', 'like', '%' . $request->search . '%')))
+            ->when($request->bulan, fn($q) => $q->whereMonth('tanggal', $request->bulan))
+            ->when($request->tahun, fn($q) => $q->whereYear('tanggal', $request->tahun))
+            ->when($request->kelas_id, fn($q) => $q->whereHas('siswa', fn($q2) => $q2->where('kelas_id', $request->kelas_id)))
+            ->when($request->status, fn($q) => $q->where('status', $request->status));
 
         if ($user->hasRole('guru-bk')) {
             // all
@@ -33,9 +38,8 @@ class KonselingController extends Controller
             abort(403, 'Akses ditolak.');
         }
 
-        $konselings = $query->orderBy('tanggal', 'desc')->get();
+        $konselings = $query->orderBy('tanggal', 'desc')->paginate(15)->withQueryString();
 
-        // Privacy Filter
         if (!$user->hasRole('guru-bk')) {
             foreach ($konselings as $konseling) {
                 if ($konseling->jenis_layanan === 'Konseling Pribadi') {
@@ -45,7 +49,9 @@ class KonselingController extends Controller
             }
         }
 
-        return view('konseling.index', compact('konselings'));
+        $kelasList = Kelas::orderBy('nama_kelas')->get();
+
+        return view('konseling.index', compact('konselings', 'kelasList'));
     }
 
     /**
@@ -71,13 +77,20 @@ class KonselingController extends Controller
         }
 
         $request->validate([
-            'tanggal' => 'required|date',
-            'siswa_nisn' => 'required|exists:siswa,nisn',
-            'jenis_layanan' => 'required|string|max:255',
-            'topik' => 'required|string|max:255',
-            'deskripsi_kasus' => 'nullable|string',
-            'tindak_lanjut' => 'nullable|string',
-            'status' => 'required|in:Terjadwal,Selesai,Batal',
+            'tanggal'        => 'required|date',
+            'siswa_nisn'     => 'required|exists:siswa,nisn',
+            'jenis_layanan'  => 'required|string|max:255',
+            'topik'          => 'required|string|max:255',
+            'deskripsi_kasus'=> 'nullable|string',
+            'tindak_lanjut'  => 'nullable|string',
+            'status'         => 'required|in:Terjadwal,Selesai,Batal',
+        ], [
+            'tanggal.required'       => 'Tanggal konseling wajib diisi.',
+            'siswa_nisn.required'    => 'Siswa wajib dipilih.',
+            'siswa_nisn.exists'      => 'Siswa tidak ditemukan.',
+            'jenis_layanan.required' => 'Jenis layanan wajib dipilih.',
+            'topik.required'         => 'Topik konseling wajib diisi.',
+            'status.required'        => 'Status wajib dipilih.',
         ]);
 
         Konseling::create([
@@ -152,12 +165,18 @@ class KonselingController extends Controller
         }
 
         $request->validate([
-            'tanggal' => 'required|date',
-            'jenis_layanan' => 'required|string|max:255',
-            'topik' => 'required|string|max:255',
-            'deskripsi_kasus' => 'nullable|string',
-            'tindak_lanjut' => 'nullable|string',
-            'status' => 'required|in:Terjadwal,Selesai,Batal',
+            'tanggal'        => 'required|date',
+            'jenis_layanan'  => 'required|string|max:255',
+            'topik'          => 'required|string|max:255',
+            'deskripsi_kasus'=> 'nullable|string',
+            'tindak_lanjut'  => 'nullable|string',
+            'status'         => 'required|in:Terjadwal,Selesai,Batal',
+        ], [
+            'tanggal.required'       => 'Tanggal konseling wajib diisi.',
+            'jenis_layanan.required' => 'Jenis layanan wajib dipilih.',
+            'topik.required'         => 'Topik konseling wajib diisi.',
+            'status.required'        => 'Status wajib dipilih.',
+            'status.in'              => 'Status tidak valid.',
         ]);
 
         $konseling->update($request->only(['tanggal', 'jenis_layanan', 'topik', 'deskripsi_kasus', 'tindak_lanjut', 'status']));

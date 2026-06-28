@@ -156,4 +156,52 @@ class CatatanPelanggaranController extends Controller
         $data = $query->orderBy('tanggal', 'desc')->get();
         return view('catatan_pelanggaran.report', compact('data'));
     }
+
+    public function edit(CatatanPelanggaran $catatanPelanggaran)
+    {
+        if (!Auth::user()->hasRole('guru-bk')) {
+            abort(403, 'Akses ditolak.');
+        }
+
+        $kelasList = Kelas::all();
+        $pelanggarans = Pelanggaran::all();
+        return view('catatan_pelanggaran.edit', compact('catatanPelanggaran', 'kelasList', 'pelanggarans'));
+    }
+
+    public function update(Request $request, CatatanPelanggaran $catatanPelanggaran)
+    {
+        if (!Auth::user()->hasRole('guru-bk')) {
+            abort(403, 'Akses ditolak.');
+        }
+
+        $request->validate([
+            'tanggal'        => 'required|date',
+            'siswa_nisn'     => 'required|exists:siswa,nisn',
+            'pelanggaran_id' => 'required|exists:pelanggarans,id',
+            'keterangan'     => 'nullable|string',
+        ], [
+            'siswa_nisn.required'     => 'Siswa wajib dipilih.',
+            'pelanggaran_id.required' => 'Jenis pelanggaran wajib dipilih.',
+            'tanggal.required'        => 'Tanggal insiden wajib diisi.',
+        ]);
+
+        $catatanPelanggaran->update([
+            'tanggal'        => $request->tanggal,
+            'siswa_nisn'     => $request->siswa_nisn,
+            'pelanggaran_id' => $request->pelanggaran_id,
+            'keterangan'     => $request->keterangan,
+        ]);
+
+        return redirect()->route('catatan-pelanggaran.index')->with('success', 'Catatan pelanggaran berhasil diperbarui.');
+    }
+
+    public function destroy(CatatanPelanggaran $catatanPelanggaran)
+    {
+        if (!Auth::user()->hasRole('guru-bk')) {
+            abort(403, 'Akses ditolak.');
+        }
+
+        $catatanPelanggaran->delete();
+        return redirect()->route('catatan-pelanggaran.index')->with('success', 'Catatan pelanggaran berhasil dihapus.');
+    }
 }
