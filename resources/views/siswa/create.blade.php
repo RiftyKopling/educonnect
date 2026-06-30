@@ -152,7 +152,7 @@
                         <label class="block text-sm font-bold text-[#03045E] mb-2 uppercase tracking-widest">Alamat Lengkap</label>
                         <textarea name="alamat" 
                             rows="3" 
-                            class="w-full rounded-2xl border-gray-200 focus:ring-[#03045E] focus:border-[#03045E] p-4 resize-none">{{ old('alamat') }}</textarea>
+                            class="w-full rounded-2xl border-gray-200 focus:ring-[#03045E] focus:border-[#03045E] p-4 resize-none" required>{{ old('alamat') }}</textarea>
                         @error('alamat') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
