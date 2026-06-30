@@ -60,7 +60,7 @@ class SiswaController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'nisn' => 'required|digits:10|unique:siswa,nisn',
             'nama_lengkap' => 'required|string|max:100',
             'jenis_kelamin' => 'required|in:L,P',
@@ -72,7 +72,7 @@ class SiswaController extends Controller
             'status' => 'nullable|in:aktif,lulus,pindah,keluar',
         ]);
 
-        Siswa::create($request->all());
+        Siswa::create($validated);
 
         return redirect()->route('siswa.index')->with('success', 'Data siswa berhasil ditambahkan.');
     }
@@ -97,7 +97,7 @@ class SiswaController extends Controller
      */
     public function update(Request $request, Siswa $siswa)
     {
-        $request->validate([
+        $validated = $request->validate([
             // Validasi pengecualian: Boleh pakai NISN yang sama JIKA itu miliknya sendiri
             'nisn' => 'required|digits:10|unique:siswa,nisn,' . $siswa->nisn . ',nisn',
             'nama_lengkap' => 'required|string|max:100',
@@ -109,7 +109,7 @@ class SiswaController extends Controller
             'status' => 'nullable|in:aktif,lulus,pindah,keluar',
         ]);
 
-        $siswa->update($request->all());
+        $siswa->update($validated);
 
         return redirect()->route('siswa.index')->with('success', 'Data siswa berhasil diperbarui.');
     }

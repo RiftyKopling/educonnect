@@ -74,18 +74,18 @@ class MonitoringController extends Controller
 
         // === TOP 5 KELAS TERAJIN (KEHADIRAN TERTINGGI BULAN INI) ===
         $bulanIni = Carbon::now()->startOfMonth()->toDateString();
-        $kelasKehadiran = Presensi::select(
-                'kelas_id',
-                DB::raw("SUM(CASE WHEN status = 'H' THEN 1 ELSE 0 END) as hadir"),
+        $kelasKehadiran = Presensi::join('kelas', 'presensi.kelas_id', '=', 'kelas.id')
+            ->select(
+                'kelas.nama_kelas',
+                DB::raw("SUM(CASE WHEN presensi.status = 'H' THEN 1 ELSE 0 END) as hadir"),
                 DB::raw("COUNT(*) as total")
             )
-            ->where('tanggal', '>=', $bulanIni)
-            ->groupBy('kelas_id')
+            ->where('presensi.tanggal', '>=', $bulanIni)
+            ->groupBy('kelas.nama_kelas')
             ->get()
             ->map(function ($item) {
-                $kelas = Kelas::find($item->kelas_id);
                 return [
-                    'nama_kelas' => $kelas ? $kelas->nama_kelas : '-',
+                    'nama_kelas' => $item->nama_kelas,
                     'persen' => $item->total > 0 ? round(($item->hadir / $item->total) * 100, 1) : 0,
                 ];
             })

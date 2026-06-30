@@ -269,6 +269,14 @@ class NilaiController extends Controller
             abort(403, 'Anda tidak diizinkan.');
         }
 
+        // Security fix: Validasi agar NISN yang dikirim benar-benar bagian dari kelas yang dipilih
+        $validNisns = \App\Models\Siswa::where('kelas_id', $kelas_id)->pluck('nisn')->toArray();
+        $submittedNisns = array_keys($request->nilai);
+        
+        if (array_diff($submittedNisns, $validNisns)) {
+            return back()->withInput()->withErrors(['nilai' => 'Manipulasi terdeteksi: Terdapat nilai untuk siswa yang tidak berada di kelas ini.']);
+        }
+
         foreach ($request->nilai as $nisn => $data) {
             Nilai::updateOrCreate(
                 [

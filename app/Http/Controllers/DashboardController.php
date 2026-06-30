@@ -39,7 +39,7 @@ class DashboardController extends Controller
             $kelas_id = $siswa?->kelas_id;
 
             $query->where(function($q) use ($kelas_id) {
-                $q->whereIn('target_type', ['all', 'all-parents'])
+                $q->whereIn('target_type', ['all', 'orang-tua'])
                 ->orWhere(function($subQ) use ($kelas_id) {
                     if ($kelas_id) {
                         $subQ->where('target_type', 'class-parents')
@@ -51,10 +51,11 @@ class DashboardController extends Controller
             });
 
         } else {
-            // Semua role lain: tampilkan pengumuman target 'all' ATAU target role mereka
-            $query->where(function($q) use ($roleSlug) {
+            // Semua role lain: tampilkan pengumuman target 'all' ATAU target role mereka ATAU milik mereka sendiri
+            $query->where(function($q) use ($roleSlug, $user) {
                 $q->where('target_type', 'all')
-                ->orWhere('target_type', $roleSlug);
+                ->orWhere('target_type', $roleSlug)
+                ->orWhere('user_id', $user->id);
             });
         }
 

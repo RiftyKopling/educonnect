@@ -138,16 +138,13 @@ class PengumumanController extends Controller {
         $kelas_id = null;
         $filePath = null;
 
-        // LOGIKA BERDASARKAN ROLE (FOKUS ADMIN)
-        if ($roleSlug == 'admin-sekolah') {
-            $target_type = 'all';
-        }
+        // Fitur hapus paksaan 'all' untuk admin agar admin juga bisa memilih target spesifik
 
         // Upload file jika ada
         if ($request->hasFile('file_lampiran')) {
             $file = $request->file('file_lampiran');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $filePath = $file->storeAs('pengumuman/lampiran', $filename, 'public');
+            // Security fix: Gunakan store() yang secara implisit menggunakan hashName()
+            $filePath = $file->store('pengumuman/lampiran', 'public');
         }
 
         // Simpan pengumuman
@@ -234,10 +231,7 @@ class PengumumanController extends Controller {
         $target_type = $request->target;
         $kelas_id = null;
 
-        // Logika target sesuai role
-        if ($roleSlug == 'admin-sekolah') {
-            $target_type = 'all';
-        }
+        // Fitur hapus paksaan 'all' untuk admin agar admin juga bisa memilih target spesifik
 
         $data = [
             'judul' => $request->judul,
@@ -263,8 +257,8 @@ class PengumumanController extends Controller {
             }
             
             $file = $request->file('file_lampiran');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $data['file_lampiran'] = $file->storeAs('pengumuman/lampiran', $filename, 'public');
+            // Security fix: Gunakan store() yang secara implisit menggunakan hashName()
+            $data['file_lampiran'] = $file->store('pengumuman/lampiran', 'public');
         }
 
         $pengumuman->update($data);
@@ -284,7 +278,10 @@ class PengumumanController extends Controller {
         // LOGIKA UNTUK ADMIN (FOKUS)
         if ($roleSlug == 'admin-sekolah') {
             // Admin melihat: pengumuman sendiri + pengumuman Kepsek dengan target 'all'
-            $kepsekIds = User::where('role_id', 4)->pluck('id'); // role_id 4 = kepala-sekolah
+            // Security/Logic fix: Hindari hardcode ID
+            $kepsekIds = User::whereHas('role', function($q){
+                $q->where('slug', 'kepala-sekolah');
+            })->pluck('id');
             
             $query->where(function($q) use ($user, $kepsekIds) {
                 // 1. Pengumuman sendiri

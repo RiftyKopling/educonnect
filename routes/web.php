@@ -18,6 +18,11 @@ use App\Http\Controllers\MonitoringController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
+// --- Rute Ping Ringan untuk Monitoring (UptimeRobot) ---
+Route::get('/ping', function () {
+    return response('200 OK', 200)->header('Content-Type', 'text/plain');
+});
+
 // --- Rute Redirect Awal ---
 Route::get('/', function () {
     if (Auth::check()) {
